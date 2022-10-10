@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     TrashIcon,
     EllipsisHorizontalIcon
@@ -7,6 +7,11 @@ import Image from 'next/image';
 
 function User({profileImage, name, email, phone, lastSeen, status, select}) {
   const [selected, setSelected] = useState(select)
+  useEffect(
+    ()=>{
+      setSelected(select)
+    },[select]
+  )
   return (
     <>
       {selected? 

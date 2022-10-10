@@ -1,15 +1,18 @@
 import { EnvelopeIcon, EyeIcon, EyeSlashIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext';
+import { db } from '../../firebase';
 
 const Login = () => {
     const router = useRouter();
     const {user, login} = useAuth();
     const [showPass, setShowPass] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [data, setData] = useState(
         {
             email: '',
@@ -17,14 +20,25 @@ const Login = () => {
         }
     );
     const handleLogin = async (e) => {
+        if (loading) return;
+        setLoading(true);
         e.preventDefault();
-        try {
-            await login(data.email, data.password)
-            Router.push("/")
-        } catch (error) {
-            console.log(error);
-        }
-        console.log(user);
+        const q = query(collection(db, "users"), where("email", "==", data.email));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(async(doc)=>{
+            if (doc.data().superuser){
+                try {
+                    await login(data.email, data.password)
+                    Router.push("/")
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+            else{
+                alert("User is not admin")
+            }
+        })
+        setLoading(false);
     }
     return ( 
         <>
@@ -45,7 +59,7 @@ const Login = () => {
                 <p className="text-3xl font-bold pb-3 w-full text-center">Welcome Mrs. Donshay</p>
                 <p className="text-gray-500">Login to continue using</p>
                 <div className="pt-5 sm:px-10 w-full max-w-lg">
-                    <form onSubmit={handleLogin}>
+                    <form onSubmit={handleLogin} method="POST">
                         <div className="shadow-md flex justify-center items-center p-5 bg-white rounded mb-7">
                         <EnvelopeIcon className="w-6 h-6 text-gray-500" />
                         <input value={data.email} className="focus:outline-none pl-4 w-full" type="email" name="email" id="email" placeholder="Email" onChange={(e)=>setData({...data, email: e.target.value})} />
@@ -66,7 +80,7 @@ const Login = () => {
                                 Forgot Password?
                             </p>
                         </Link>
-                        <input className="shadow-md flex justify-center items-center p-5 bg-[#004064] rounded mt-7 cursor-pointer text-white w-full" type="submit" value="Login" />
+                        <input className="shadow-md flex justify-center items-center p-5 bg-[#004064] rounded mt-7 cursor-pointer text-white w-full" type="submit" value={loading ? "Logging in..." : "Log In"} />
                         <Link href="/auth/signup" >
                             <p className="text-end w-full text-sm text-gray-500 mt-2 hover:text-black cursor-pointer" >
                                 Don&apos;t have an account? Sign up here.

@@ -5,8 +5,10 @@ import SubNavBar from '../components/SubNavBar'
 import { faker } from "@faker-js/faker";
 import OpenedMessage from '../components/OpenedMessage'
 import Chat from '../components/Chat'
-import { collectionGroup, getDocs, query } from 'firebase/firestore';
-import { db } from '../firebase';
+import { collection, collectionGroup, doc, getDoc, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { auth, db } from '../firebase';
+import StartChatModal from '../components/StartChatModal';
+import { useEffect, useState } from 'react';
 
 
 /*
@@ -32,9 +34,28 @@ chat = {
 }
 */
 
-function chats({userList}) {
-  console.log(userList)
-  const messages = [{}]
+function Chats() {
+  const [chatList, setChatList] = useState([]);
+  const [openedChat, setOpenedChat] = useState([]);
+  const openChat = async (chatID) => {
+    const docRef = await getDoc(doc(db, `users/${auth.currentUser.uid}/chats`, chatID)).then(
+      (docSnap) => {
+        setOpenedChat(docSnap.data())
+      }
+    )
+  }
+
+  useEffect(
+    () =>
+      onSnapshot(
+        query(collection(db, `users/${auth.currentUser.uid}/chats`)),
+        (snapshot) => {
+          setChatList(snapshot.docs);
+        }
+      ),
+    [db]
+  );
+  console.log("ChatList: ", chatList)
   return (
       <div className="bg-default">
         <Head>
@@ -56,15 +77,16 @@ function chats({userList}) {
                 <p>All Messages</p>
                 <p className="text-xs">View all</p>
               </div>
+              <StartChatModal />
               <div className="rounded-lg overflow-hidden">
-                {userList.map((user)=>{
-                  return <Chat sender={user.name} senderImage={user.image} messageTime="2:00" key={user.uid} />
+                {chatList.map((chat)=>{
+                  return <Chat chatDetails={chat.data()} key={chat.id} onClick={()=>openChat(chat.id)} />
                 })}
               </div>
             </div>
 
-            <div className="bg-[#F4F5F8] col-span-4 rounded-lg lg:col-span-3 py-5 px-3 min-h-[70vh]">
-              <OpenedMessage />
+            <div className="hidden lg:block bg-[#F4F5F8] rounded-lg col-span-3 py-5 px-3 min-h-[70vh]">
+              {openedChat.length == 0 ? <div className='text-center text-gray-400'>No Opened Chat</div> : <OpenedMessage chatDetails={openedChat} />}
             </div>
           </div>
         </div>
@@ -87,4 +109,4 @@ export async function getServerSideProps(){
   }
 }
 
-export default chats
+export default Chats

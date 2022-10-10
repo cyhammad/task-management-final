@@ -5,7 +5,7 @@ import SubNavBar from "../components/SubNavBar";
 import { faker } from "@faker-js/faker";
 import { MagnifyingGlassIcon, TrashIcon } from "@heroicons/react/24/outline";
 import User from "../components/User";
-import { collectionGroup, getDocs, query } from "firebase/firestore";
+import { collection, collectionGroup, getDocs, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { Pagination } from "../utility/Pagination";
 import { filterbySearch } from "../utility/filter";
@@ -14,18 +14,23 @@ import {
   UserPlusIcon,
   CheckIcon,
 } from "@heroicons/react/24/solid"
+import AddUserModal from "../components/AddUserModal";
 
-function Users({ userList }) {
+
+function Users({userList}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [filter, setFilter] = useState("");
   const [allSelected, setAllSelected] = useState(false);
+
   const perPage = 4;
 
   const indexOfLastData = currentPage * perPage;
   const indexOfFirstData = indexOfLastData - perPage;
   const currentData = filteredUsers.slice(indexOfFirstData, indexOfLastData);
 
+
+  console.log("USER:",currentData)
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -34,41 +39,16 @@ function Users({ userList }) {
   };
 
   useEffect(() => {
-    setFilteredUsers(filterbySearch(userList, filter));
-  },[userList, filter]);
+    if (userList.length !== 0){
+      setFilteredUsers(filterbySearch(userList, filter));
+    }
+  },[userList, filter, allSelected]);
 
-  const displayUsers = currentData.map((user) => {
-      return (
-        <User
-          name={user.name}
-          email={user.email}
-          phone={user.phone ? user.phone : "0000 0000000"}
-          status="active"
-          profileImage={user.image}
-          lastSeen="12 mins ago."
-          select={false}
-          key={user.uid}
-        />
-      );
-    })
-  const displaySelectedUsers = currentData.map((user) => {
-      return (
-        <User
-          name={user.name}
-          email={user.email}
-          phone={user.phone ? user.phone : "0000 0000000"}
-          status="active"
-          profileImage={user.image}
-          lastSeen="12 mins ago."
-          select={true}
-          key={user.uid}
-        />
-      );
-    })
+  console.log("USERS: ",userList);
     const handleAllSelected = () =>{
       setAllSelected(!allSelected);
-      displayUsers
     }
+    console.log("All sel", allSelected)
     return (
     <div className="bg-default">
       <Head>
@@ -85,12 +65,9 @@ function Users({ userList }) {
         <h1 className="text-3xl font-bold mt-11">Users</h1>
         <SubNavBar selectedTab="users">
           <div className="flex gap-x-3 p-0 m-0">
-              <div className="text-white bg-[#004064] py-[6px] pl-2 pr-3 text-xs rounded flex items-center gap-x-1 cursor-pointer">
-                  <UserPlusIcon className='h-4 w-4' />
-                  Add User
-              </div>
+              <AddUserModal />
               <div className="text-white bg-[#004064] py-[6px] pl-2 pr-3 text-xs rounded flex items-center gap-x-1 cursor-pointer" onClick={()=>handleAllSelected()}>
-                  <CheckIcon className='h-4 w-4 p-[1px] border rounded-sm' />
+                  {allSelected ? <CheckIcon className='h-4 w-4 p-[1px] border rounded-sm' /> : <CheckIcon className='h-4 w-4 p-[1px] border rounded-sm text-[#004064]' />}
                   Select All
               </div>
               <div className="text-white bg-[#004064] py-[6px] pl-2 pr-3 text-xs rounded flex items-center gap-x-1 cursor-pointer">
@@ -109,7 +86,23 @@ function Users({ userList }) {
             onChange={searchText.bind(this)}
           />
         </div>
-        {displayUsers}
+        {
+          currentData.map((user) => (
+            <>
+            <User
+                name={user.name}
+                email={user.email}
+                phone={user.phone ? user.phone : "0000 0000000"}
+                status="active"
+                profileImage={user.profilePic}
+                lastSeen="12 mins ago."
+                select={allSelected}
+                key={user.uid}
+              />
+            </>
+          )
+          )
+        }
       </div>
       {/* Pagination */}
       <div className="px-16 py-8">
@@ -125,7 +118,7 @@ function Users({ userList }) {
 }
 export async function getServerSideProps() {
   var userList = [];
-  const users = query(collectionGroup(db, "users"));
+  const users = query(collection(db, "users"), where("name", "!=", 'Admin'));
   const querySnapshot = await getDocs(users);
   querySnapshot.forEach((doc) => {
     userList.push(JSON.parse(JSON.stringify(doc.data())));

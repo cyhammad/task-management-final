@@ -7,6 +7,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 import Head from "next/head";
 import Image from "next/image";
@@ -15,11 +16,22 @@ import Header from "../components/Header";
 import SubNavBar from "../components/SubNavBar";
 import Task from "../components/Task";
 import TaskColumn from "../components/TaskColumn";
-import { db } from "../firebase";
+import { useAuth } from "../context/AuthContext";
+import { auth, db } from "../firebase";
 
-function QuickTasks({ quickTasks, newTasks, todos, inProgress, completed }) {
-
-  console.log(newTasks, quickTasks, todos, inProgress, completed);
+function QuickTasks({ taskList }) {
+  const [tasks, setTasks] = useState([])
+  useEffect(
+    () =>
+      onSnapshot(
+        query(collection(db, `users/${auth.currentUser.uid}/tasks`), orderBy("name")),
+        (snapshot) => {
+          setTasks(snapshot.docs);
+        }
+      ),
+    [db]
+  );
+  console.log("tasks: ",tasks);
   return (
     <div className="bg-default">
       <Head>
@@ -36,70 +48,7 @@ function QuickTasks({ quickTasks, newTasks, todos, inProgress, completed }) {
         <h1 className="text-3xl font-bold mt-11">Quick Tasks</h1>
         <SubNavBar selectedTab="quicktasks" />
         <div className="flex space-x-5 w-full overflow-x-scroll h-[1000px] scroll-smooth scrollbar">
-          <TaskColumn name="New Tasks" nCount="2">
-            {newTasks.map((qtask) => {
-              return (
-                <Task
-                  title={qtask.title}
-                  subtitle={qtask.subtitle}
-                  priority={qtask.priority}
-                  description={qtask.description}
-                  dueDate={qtask.dueDate}
-                  taskImage={qtask.taskImage}
-                  status={qtask.status}
-                  key={qtask.id}
-                />
-              );
-            })}
-          </TaskColumn>
-          <TaskColumn name="To do" nCount="2">
-            {todos.map((qtask) => {
-              return (
-                <Task
-                  title={qtask.title}
-                  subtitle={qtask.subtitle}
-                  priority={qtask.priority}
-                  description={qtask.description}
-                  dueDate={qtask.dueDate}
-                  taskImage={qtask.taskImage}
-                  status={qtask.status}
-                  key={qtask.id}
-                />
-              );
-            })}
-          </TaskColumn>
-          <TaskColumn name="In Progress" nCount="2">
-            {todos.map((qtask) => {
-              return (
-                <Task
-                  title={qtask.title}
-                  subtitle={qtask.subtitle}
-                  priority={qtask.priority}
-                  description={qtask.description}
-                  dueDate={qtask.dueDate}
-                  taskImage={qtask.taskImage}
-                  status={qtask.status}
-                  key={qtask.id}
-                />
-              );
-            })}
-          </TaskColumn>
-          <TaskColumn name="Completed" nCount="2">
-            {todos.map((qtask) => {
-              return (
-                <Task
-                  title={qtask.title}
-                  subtitle={qtask.subtitle}
-                  priority={qtask.priority}
-                  description={qtask.description}
-                  dueDate={qtask.dueDate}
-                  taskImage={qtask.taskImage}
-                  status={qtask.status}
-                  key={qtask.id}
-                />
-              );
-            })}
-          </TaskColumn>
+
         </div>
       </div>
       {/* Modal */}
@@ -108,34 +57,15 @@ function QuickTasks({ quickTasks, newTasks, todos, inProgress, completed }) {
 }
 
 export async function getServerSideProps() {
-  var tasks = [];
-  const quickTasks = query(collectionGroup(db, "quicktasks"));
-  const querySnapshot = await getDocs(quickTasks);
-  querySnapshot.forEach((doc) => {
-    tasks.push(JSON.parse(JSON.stringify(doc.data())));
-  });
-  var newTasks = [];
-  var todos = [];
-  var inProgress = [];
-  var completed = [];
-  for (let  i of tasks) {
-    if (i.status == "newTask") {
-      newTasks.push(i);
-    } else if (i.status == "todo") {
-      todos.push(i);
-    } else if (i.status == "inprogress") {
-      inProgress.push(i);
-    } else if (i.status == "completed") {
-      inProgress.push(i);
-    }
-  }
+  
+  const tasks = await getDocs(query(collectionGroup(db, "users")));
+  var taskList = [];
+  tasks.forEach((doc)=>{
+    taskList.push(JSON.parse(JSON.stringify(doc.data())))
+  })
   return {
     props: {
-      quickTasks: tasks,
-      newTasks,
-      todos,
-      inProgress,
-      completed,
+      taskList
     },
   };
 }
