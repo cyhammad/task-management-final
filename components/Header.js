@@ -24,7 +24,7 @@ function Header(props) {
         <div className="h-16 flex xl:mx-auto border-b-2 border-gray-100 px-4 sm:px-6 md:px-8 lg:px-10 shadow-sm">
           {/* Left */}
           <div className="relative w-24 cursor-pointer">
-            <Image src="/LOGO.png" layout="fill" alt="Profile" objectFit="contain" />
+            <Image src="https://firebasestorage.googleapis.com/v0/b/taskmanagement-a5d8a.appspot.com/o/LOGO.PNG?alt=media&token=4357c703-28fd-476b-b998-0525088436c0" layout="fill" alt="Profile" objectFit="contain" />
           </div>
 
           <div className="justify-between grow hidden lg:inline-flex">
