@@ -4,7 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
+*{
+    font-family: 'Poppins';
+}
 @layer components {
     .navBtn{
         @apply h-6 cursor-pointer hover:scale-110 transition-all duration-150 ease-out;

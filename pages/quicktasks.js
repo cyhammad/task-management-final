@@ -45,7 +45,7 @@ function QuickTasks({ taskList }) {
 
       {/* Tasks */}
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 min-h-screen">
-        <h1 className="text-3xl font-bold mt-11">Quick Tasks</h1>
+        <h1 className="text-3xl font-semibold mt-11">Quick Tasks</h1>
         <SubNavBar selectedTab="quicktasks" />
         <div className="flex space-x-5 w-full overflow-x-scroll h-[1000px] scroll-smooth scrollbar">
 

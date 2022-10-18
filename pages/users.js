@@ -62,7 +62,7 @@ function Users({userList}) {
 
       {/* Users */}
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 min-h-[">
-        <h1 className="text-3xl font-bold mt-11">Users</h1>
+        <h1 className="text-3xl font-semibold mt-11">Users</h1>
         <SubNavBar selectedTab="users">
           <div className="flex gap-x-3 p-0 m-0">
               <AddUserModal />

@@ -3,9 +3,10 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 import { auth, db } from '../firebase';
 
-function StartChatModal() {
+function StartChatModal({openChat}) {
   const [showModal, setShowModal] = useState(false);
   const [users, setUsers] = useState([]);
+  console.log(openChat);
   useEffect(
     () =>
       onSnapshot(
@@ -25,15 +26,19 @@ function StartChatModal() {
             isSeen: true,
             recentMessage: null,
             timeSent: null
-          })
+          }).then(
+            openChat(user.data().uid+'-chat')
+          )
           console.log("CHAT ADDED WITH DOCREF: ", docRef); 
         }
         else {
           console.log("Chat already exists")
+          openChat(user.data().uid+'-chat')
         }
       }
     )
     setShowModal(false);
+
   }
   return (
     <>

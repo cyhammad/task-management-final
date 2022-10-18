@@ -20,7 +20,7 @@ function ProjectTasks() {
 
       {/* Tasks */}
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 min-h-screen">
-        <h1 className="text-3xl font-bold mt-11">Project Tasks</h1>
+        <h1 className="text-3xl font-semibold mt-11">Project Tasks</h1>
         <SubNavBar selectedTab="projects" />
         <div className="flex space-x-5 w-full overflow-x-scroll scroll-smooth scrollbar">
           <TaskColumn name="New Tasks">

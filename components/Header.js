@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import { collection, query } from "firebase/firestore";
 import { db } from "../firebase";
+import SearchModal from "./SearchModal";
 
 function Header(props) {
   const { user, logout } = useAuth();
@@ -54,7 +55,7 @@ function Header(props) {
 
             {/* Right */}
             <div className="flex items-center justify-end space-x-4">
-              <MagnifyingGlassIcon className="navBtn" />
+              <SearchModal />
               <div className="relative navBtn">
                 <div className="absolute h-2 w-2 bg-yellow-400 rounded-full right-1"></div>
                 <BellIcon className="navBtn" />

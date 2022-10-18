@@ -10,7 +10,6 @@ import { db } from '../firebase'
 import { doc, getDoc } from 'firebase/firestore'
 
 function Project(props) {
-    console.log(props.userId)
     const [userPic, setUserPic] = useState("");
     useEffect(
         ()=>{
