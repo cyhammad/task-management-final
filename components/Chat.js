@@ -21,7 +21,7 @@ function Chat({chatDetails, onClick}) {
     console.log("Chat : ", chatDetails)
     return (
       <div onClick={onClick}>
-        <div className="bg-white px-4 py-4 flex space-x-3 min-w-[240px] hover:bg-[#F3F3F3] cursor-pointer" >
+        <div className="bg-white px-4 py-4 flex space-x-3 hover:bg-[#F3F3F3] cursor-pointer" >
           <div className=" rounded-md bg-white">
             <Image src={sender != null ? sender.profilePic : ""} alt="profile" height={50} width={50} className="h-10 cursor-pointer rounded-full" />
           </div>

@@ -68,7 +68,7 @@ function Chats() {
         <Header selectedTab="work" />
   
         {/* Tasks */}
-        <div className='px-4 sm:px-6 md:px-8 lg:px-10 min-h-[75vh] lg:min-h-[85vh]'>
+        <div className='px-4 sm:px-6 md:px-8 lg:px-10 min-h-[75vh] lg:min-h-[85vh] pb-20'>
           <h1 className="text-3xl font-semibold mt-11">Chats</h1>
           <SubNavBar selectedTab="chats" />
           <div className="lg:grid lg:grid-cols-4 lg:gap-4 mt-5">
