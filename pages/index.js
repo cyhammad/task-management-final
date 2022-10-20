@@ -19,6 +19,10 @@ import {
 export default function Home() {
   const { user, logout } = useAuth();
   const [taskList, setTaskList] = useState([]);
+  const [newTasks, setNewTasks] = useState([]);
+  const [todoTasks, setTodoTasks] = useState([]);
+  const [inProgressTasks, setInProgressTasks] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
   useEffect(
     () =>
       onSnapshot(query(collectionGroup(db, "projects")), (snapshot) => {
@@ -26,6 +30,31 @@ export default function Home() {
       }),
     [db]
   );
+  useEffect(
+    ()=>{
+      var a = taskList.filter(item =>item.data().status == "new")
+      setNewTasks(a);
+    },[taskList]
+  );
+  useEffect(
+    ()=>{
+      var a = taskList.filter(item =>item.data().status == "todo")
+      setTodoTasks(a);
+    },[taskList]
+  );
+  useEffect(
+    ()=>{
+      var a = taskList.filter(item =>item.data().status == "inprogress")
+      setInProgressTasks(a);
+    },[taskList]
+  );
+  useEffect(
+    ()=>{
+      var a = taskList.filter(item =>item.data().status == "completed")
+      setCompletedTasks(a);
+    },[taskList]
+  );
+  console.log("NEW TS:", todoTasks)
   return (
     <div className="bg-default">
       <Head>
@@ -37,15 +66,14 @@ export default function Home() {
       <Header selectedTab="work" />
 
       {/* Tasks */}
-      <div className="px-4 sm:px-6 md:px-8 lg:px-10 min-h-screen">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 lg:min-h-screen">
         <h1 className="text-3xl font-semibold mt-11">Projects</h1>
         <SubNavBar selectedTab="projects" />
-        <div className="flex space-x-5 w-full overflow-x-scroll scroll-smooth scrollbar">
-          <TaskColumn name="New Projects">
-            {taskList.map((task) => (
+        <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar">
+          <TaskColumn name="New Projects" taskCount={newTasks.length} >
+            {newTasks.map((task) => (
               <>
-                {task.data().status == "new" ? (
-                  <Project
+                <Project
                     name={task.data().title}
                     priority={task.data().priorityValue}
                     taskNumber={task.data().tasks.length}
@@ -54,60 +82,53 @@ export default function Home() {
                     projectId={task.data().projectId}
                     key={task.data().id}
                   />
-                  ) : null}
               </>
             ))}
           </TaskColumn>
-          <TaskColumn name="Todo">
-            {taskList.map((task) => (
-              <>
-                {task.data().status == "todo" ? (
+          <TaskColumn name="Todo" taskCount={todoTasks.length}>
+            {todoTasks.map((task) => (
+                <>
                   <Project
-                    name={task.data().title}
-                    priority={task.data().priorityValue}
-                    taskNumber={task.data().tasks.length}
-                    userId={task.data().userId}
-                    desc={task.data().description}
-                    projectId={task.data().projectId}
-                    key={task.data().id}
-                  />
-                  ) : null}
-              </>
-            ))}
+                      name={task.data().title}
+                      priority={task.data().priorityValue}
+                      taskNumber={task.data().tasks.length}
+                      userId={task.data().userId}
+                      desc={task.data().description}
+                      projectId={task.data().projectId}
+                      key={task.data().id}
+                    />
+                </>
+              ))}
           </TaskColumn>
-          <TaskColumn name="In Progress">
-            {taskList.map((task) => (
-              <>
-                {task.data().status == "inprogress" ? (
+          <TaskColumn name="In Progress" taskCount={inProgressTasks.length}>
+            {inProgressTasks.map((task) => (
+                <>
                   <Project
-                    name={task.data().title}
-                    priority={task.data().priorityValue}
-                    taskNumber={task.data().tasks.length}
-                    userId={task.data().userId}
-                    desc={task.data().description}
-                    projectId={task.data().projectId}
-                    key={task.data().id}
-                  />
-                  ) : null}
-              </>
-            ))}
+                      name={task.data().title}
+                      priority={task.data().priorityValue}
+                      taskNumber={task.data().tasks.length}
+                      userId={task.data().userId}
+                      desc={task.data().description}
+                      projectId={task.data().projectId}
+                      key={task.data().id}
+                    />
+                </>
+              ))}
           </TaskColumn>
-          <TaskColumn name="Completed">
-            {taskList.map((task) => (
-              <>
-                {task.data().status == "completed" ? (
+          <TaskColumn name="Completed" taskCount={completedTasks.length}>
+            {completedTasks.map((task) => (
+                <>
                   <Project
-                    name={task.data().title}
-                    priority={task.data().priorityValue}
-                    taskNumber={task.data().tasks.length}
-                    userId={task.data().userId}
-                    desc={task.data().description}
-                    projectId={task.data().projectId}
-                    key={task.data().id}
-                  />
-                  ) : null}
-              </>
-            ))}
+                      name={task.data().title}
+                      priority={task.data().priorityValue}
+                      taskNumber={task.data().tasks.length}
+                      userId={task.data().userId}
+                      desc={task.data().description}
+                      projectId={task.data().projectId}
+                      key={task.data().id}
+                    />
+                </>
+              ))} 
           </TaskColumn>
         </div>
       </div>

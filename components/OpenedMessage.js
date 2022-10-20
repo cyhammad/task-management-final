@@ -60,7 +60,8 @@ function OpenedMessage({ chatDetails }) {
       ),
       {
         message: msg,
-        to: auth.currentUser.uid,
+        from: auth.currentUser.uid,
+        to: chatDetails.with,
         timeSent: serverTimestamp(),
         isSeen: false,
       }
@@ -96,6 +97,7 @@ function OpenedMessage({ chatDetails }) {
         message: msg,
         image: imgLink,
         from: auth.currentUser.uid,
+        to: chatDetails.with,
         timeSent: serverTimestamp(),
         isSeen: false,
       }
@@ -177,12 +179,12 @@ function OpenedMessage({ chatDetails }) {
             <>
               <div
                 className={`flex  my-1 ${
-                  msg.data().from ? "" : "flex-row-reverse"
+                  msg.data().from == chatDetails.with ? "" : "flex-row-reverse"
                 }`}
               >
                 <div className="relative cursor-pointer">
                   <Image
-                    src={msg.data().from ? recipient.profilePic : user.photoURL}
+                    src={msg.data().from == chatDetails.with ? recipient.profilePic : user.photoURL}
                     alt="profile"
                     height={50}
                     width={50}

@@ -30,6 +30,7 @@ function ProjectTask() {
       }),
     []
   );
+  console.log("TASKS:", taskList)
   return (
     <div className="bg-default">
       <Head>
@@ -49,15 +50,14 @@ function ProjectTask() {
           <TaskColumn name="New Projects">
             {taskList.map((task) => (
               <>
-                {task.status == "new" ? (
+                {task.status == "new" || !task.status ? (
                   <Task
-                    name={task.data().title}
-                    priority={task.data().priorityValue}
-                    taskNumber={task.data().tasks.length}
-                    userId={task.data().userId}
-                    desc={task.data().description}
-                    projectId={task.data().projectId}
-                    key={task.data().id}
+                    name={task.title}
+                    priority={task.priorityValue}
+                    userId={task.userId}
+                    desc={task.description}
+                    projectId={task.projectId}
+                    key={task.id}
                   />
                 ) : null}
               </>
@@ -70,7 +70,6 @@ function ProjectTask() {
                   <Task
                     name={task.data().title}
                     priority={task.data().priorityValue}
-                    taskNumber={task.data().tasks.length}
                     userId={task.data().userId}
                     desc={task.data().description}
                     projectId={task.data().projectId}
@@ -87,7 +86,6 @@ function ProjectTask() {
                   <Task
                     name={task.data().title}
                     priority={task.data().priorityValue}
-                    taskNumber={task.data().tasks.length}
                     userId={task.data().userId}
                     desc={task.data().description}
                     projectId={task.data().projectId}
@@ -104,7 +102,6 @@ function ProjectTask() {
                   <Task
                     name={task.data().title}
                     priority={task.data().priorityValue}
-                    taskNumber={task.data().tasks.length}
                     userId={task.data().userId}
                     desc={task.data().description}
                     projectId={task.data().projectId}

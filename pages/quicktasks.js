@@ -19,19 +19,54 @@ import TaskColumn from "../components/TaskColumn";
 import { useAuth } from "../context/AuthContext";
 import { auth, db } from "../firebase";
 
-function QuickTasks({ taskList }) {
-  const [tasks, setTasks] = useState([])
+function QuickTasks() {
+  const [tasks, setTasks] = useState([]);
+  const [newTasks, setNewTasks] = useState([]);
+  const [todoTasks, setTodoTasks] = useState([]);
+  const [inProgressTasks, setInProgressTasks] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
+  const [newTaskCount, setNewTaskCount] = useState(3);
+  const [todoTaskCount, setTodoTaskCount] = useState(3);
+  const [inProgressTaskCount, setInProgressTaskCount] = useState(3);
+  const [completedTaskCount, setCompletedTaskCount] = useState(3);
+
   useEffect(
     () =>
-      onSnapshot(
-        query(collection(db, `users/${auth.currentUser.uid}/tasks`), orderBy("name")),
-        (snapshot) => {
-          setTasks(snapshot.docs);
-        }
-      ),
+      onSnapshot(query(collectionGroup(db, "tasks")), (snapshot) => {
+        setTasks(snapshot.docs);
+      }),
     [db]
   );
-  console.log("tasks: ",tasks);
+  useEffect(() => {
+    var a = tasks.filter((item) => item.data().status == "new" || !item.data().status);
+    setNewTasks(a);
+  }, [tasks]);
+  useEffect(() => {
+    var a = tasks.filter((item) => item.data().status == "todo");
+    setTodoTasks(a);
+  }, [tasks]);
+  useEffect(() => {
+    var a = tasks.filter((item) => item.data().status == "inprogress");
+    setInProgressTasks(a);
+  }, [tasks]);
+  useEffect(() => {
+    var a = tasks.filter((item) => item.data().status == "completed");
+    setCompletedTasks(a);
+  }, [tasks]);
+  const viewMore = (task) => {
+    if (task == "new"){
+      setNewTaskCount(newTasks.length)
+    }
+    if (task == "todo"){
+      setTodoTaskCount(todoTasks.length)
+    }
+    if (task == "inProgress"){
+      setInProgressTaskCount(inProgressTasks.length)
+    }
+    if (task == "completed"){
+      setCompletedTaskCount(completedTasks.length)
+    }
+  }
   return (
     <div className="bg-default">
       <Head>
@@ -44,30 +79,43 @@ function QuickTasks({ taskList }) {
       <Header selectedTab="work" />
 
       {/* Tasks */}
-      <div className="px-4 sm:px-6 md:px-8 lg:px-10 min-h-screen">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 lg:min-h-screen lg:pb-10">
         <h1 className="text-3xl font-semibold mt-11">Quick Tasks</h1>
         <SubNavBar selectedTab="quicktasks" />
-        <div className="flex space-x-5 w-full overflow-x-scroll h-[1000px] scroll-smooth scrollbar">
-
+        <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar">
+          <TaskColumn name="New Projects" taskCount={newTasks.length} viewMore={()=>viewMore("new")}>
+            {newTasks.slice(0, newTaskCount).map((task) => (
+              <>
+                <Task task={task} />
+              </>
+            ))}
+          </TaskColumn>
+          <TaskColumn name="Todo" taskCount={todoTasks.length} viewMore={()=>viewMore("todo")} >
+            {todoTasks.slice(0, todoTaskCount).map((task) => (
+              <>
+                <Task task={task} />
+              </>
+            ))}
+          </TaskColumn>
+          <TaskColumn name="In Progress" taskCount={inProgressTasks.length} viewMore={()=>viewMore("inProgress")} >
+            {inProgressTasks.slice(0, inProgressTaskCount).map((task) => (
+              <>
+                <Task task={task} />
+              </>
+            ))}
+          </TaskColumn>
+          <TaskColumn name="Completed" taskCount={completedTasks.length} viewMore={()=>viewMore("completed")} >
+            {completedTasks.slice(0, completedTaskCount).map((task) => (
+              <>
+                <Task task={task} />
+              </>
+            ))}
+          </TaskColumn>
         </div>
       </div>
       {/* Modal */}
     </div>
   );
-}
-
-export async function getServerSideProps() {
-  
-  const tasks = await getDocs(query(collectionGroup(db, "users")));
-  var taskList = [];
-  tasks.forEach((doc)=>{
-    taskList.push(JSON.parse(JSON.stringify(doc.data())))
-  })
-  return {
-    props: {
-      taskList
-    },
-  };
 }
 
 export default QuickTasks;

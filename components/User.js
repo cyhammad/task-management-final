@@ -15,8 +15,8 @@ function User({profileImage, name, email, phone, lastSeen, status, select}) {
   return (
     <>
       {selected? 
-        <div className="bg-[#F4F5F8] mx-2 px-2 py-3 h-20 border-b border-gray-300 flex items-center gap-x-5 justify-between cursor-pointer" onClick={()=>setSelected(false)}>
-          <input type="checkbox" name="selected" id="selected" className="w-4 h-4 checked:bg-[#004064]" checked />
+        <div className="bg-[#F4F5F8] mx-2 px-2 py-3 h-20 border-b border-gray-300 flex items-center gap-x-5 justify-between cursor-pointer">
+          <input type="checkbox" name="selected" id="selected" className="w-4 h-4 checked:bg-[#004064]" onClick={()=>setSelected(false)} checked />
           <div className=" rounded-md bg-white">
               <Image src={profileImage} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" />
           </div>
@@ -28,8 +28,8 @@ function User({profileImage, name, email, phone, lastSeen, status, select}) {
           <TrashIcon className="w-5 h-5 grow" />
           <EllipsisHorizontalIcon className="h-8 w-8" />
         </div>:
-        <div className="mx-2 px-2 py-3 h-20 border-b border-gray-300 flex items-center gap-x-5 justify-between cursor-pointer" onClick={()=>setSelected(true)}>
-          <input type="checkbox" name="selected" id="selected" className="w-4 h-4 checked:bg-[#004064]" />
+        <div className="mx-2 px-2 py-3 h-20 border-b border-gray-300 flex items-center gap-x-5 justify-between cursor-pointer" >
+          <input type="checkbox" name="selected" id="selected" className="w-4 h-4 checked:bg-[#004064]" onClick={()=>setSelected(true)} />
           <div className=" rounded-md bg-white flex items-center">
             <Image src={profileImage} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" />
           </div>
