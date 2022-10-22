@@ -3,36 +3,80 @@ import {
   EllipsisHorizontalIcon,
   ChatBubbleOvalLeftEllipsisIcon,
 } from "@heroicons/react/24/outline";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
-function TaskOptions() {
+function TaskOptions({task}) {
   const [showOptions, setShowOptions] = useState(false);
   const [showUpdateOptions, setShowUpdateOptions] = useState(false);
+  const updateStatus = async(status) => {
+    const docRef = doc(db, `users/${task.userId}/tasks`, task.taskId);
+    updateDoc(docRef, {
+      status: status
+    }).then(
+      ()=>{
+        setShowOptions(false)
+        setShowUpdateOptions(false)
+      }
+    )
+  }
   return (
     <div
       className="flex flex-col items-end justify-end cursor-pointer relative"
-      onClick={() => setShowOptions(true)}
+      onClick={() => setShowOptions(!showOptions)}
     >
       <EllipsisHorizontalIcon className="h-8 w-8" />
       <div
-        className={
-          showOptions
-            ? "bg-[#282828] text-white text-center text-xs rounded absolute top-3"
-            : "hidden"
-        }
-        onMouseLeave={() => setShowOptions(false)}
+        className={`absolute flex flex-col w-[150px] top-5 rounded bg-[#282828] ${
+          showOptions ? null : "hidden"
+        } text-white w-fit`}
+        onMouseLeave={() => {
+          setShowOptions(false);
+          setShowUpdateOptions(false);
+        }}
       >
-        <p className="py-1 px-2 border-b border-white">View Details</p>
-        <p
-          className="py-1 px-2 border-b border-white"
+        <button className="px-8 py-1 text-sm">View details</button>
+        <button
+          className="border-t border-white py-1 text-sm"
           onMouseEnter={() => setShowUpdateOptions(true)}
-          onMouseLeave={() => setShowUpdateOptions(false)}
         >
           Update Status
-        </p>
-        <p className="py-1 px-2 border-b border-white">View Attachments</p>
-        <p className="py-1 px-2 border-b border-white">Chat</p>
-        <p className="py-1 px-2 border-b border-white">Delete</p>
-      </div>
+        </button>
+        <div
+          className={`bg-[#282828] absolute left-[150px] top-[28px] w-[220px] ${
+            showUpdateOptions ? null : "hidden"
+          }`}
+          onMouseLeave={() => setShowUpdateOptions(false)}
+        >
+          <button className="px-5 py-1 text-sm w-[220px] text-start" onClick={()=>updateStatus("todo")}>
+            Assigned
+          </button>
+          <button className="px-5 py-1 text-sm w-[220px] text-start border-t border-white" onClick={()=>updateStatus("inprogress")}>
+            In Progress
+          </button>
+          <button className="px-5 py-1 text-sm w-[220px] text-start border-t border-white" onClick={()=>updateStatus("inprogress")}>
+            Pending Client Review
+          </button>
+          <button className="px-5 py-1 text-sm w-[220px] text-start border-t border-white" onClick={()=>updateStatus("inprogress")}>
+            Pending 3rd Party Action
+          </button>
+          <button className="px-5 py-1 text-sm w-[220px] text-start border-t border-white" onClick={()=>updateStatus("todo")}>
+            Revision
+          </button>
+          <button className="px-5 py-1 text-sm w-[220px] text-start border-t border-white" onClick={()=>updateStatus("inprogress")}>
+            Ready for review
+          </button>
+          <button className="px-5 py-1 text-sm w-[220px] text-start border-t border-white" onClick={()=>updateStatus("completed")}>
+            Completed
+          </button>
+          <button className="px-5 py-1 text-sm w-[220px] text-start border-t border-white">
+            Archive After 30 days
+          </button>
+        </div>
+        <button className="border-t border-white py-1 text-sm">
+          Attachments
+        </button>
+      </div>  
     </div>
   );
 }

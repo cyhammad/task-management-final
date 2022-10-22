@@ -24,7 +24,7 @@ function Project(props) {
       console.log("No tasks")
     }
     else{
-      router.push(`/projecttasks/${props.projectId}`)
+      router.push(`/projecttasks/${props.userId}/${props.projectId}`)
     }
   }
   return (

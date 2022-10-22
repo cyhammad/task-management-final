@@ -30,7 +30,6 @@ function SearchModal() {
     }
     setShowModal(false);
   }
-  console.log(resultlist)
   return (
     <>
       <div

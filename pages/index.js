@@ -54,7 +54,6 @@ export default function Home() {
       setCompletedTasks(a);
     },[taskList]
   );
-  console.log("NEW TS:", todoTasks)
   return (
     <div className="bg-default">
       <Head>

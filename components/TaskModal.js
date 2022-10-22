@@ -8,22 +8,21 @@ export default function TaskModal({ task }) {
   const [userPic, setUserPic] = useState("");
   const [remainingTime, setRemainingTime] = useState(null);
   useEffect(() => {
-    if (task.data().userId != undefined) {
-      const docRef = doc(db, "users", task.data().userId);
+    if (task.userId != undefined) {
+      const docRef = doc(db, "users", task.userId);
       getDoc(docRef).then((docSnap) => {
         setUserPic(docSnap.data().profilePic);
-        console.log("PROFILEPIC:", docSnap.data());
       });
     }
   }, [task]);
   useEffect(()=>{
     const date = new Date();
-    const dueDate = new Date(task.data().dueDateTime)
+    const dueDate = new Date(task.dueDateTime)
     const diff = new Date(date.getTime() - dueDate.getTime())
     setRemainingTime(diff.getUTCDay() +"D "+diff.getUTCHours()+" Hrs "+diff.getUTCMinutes()+" mins");
   },[task])
   const handleMarkComplete = async() => {
-    const docRef = doc(db, `users/${task.data().userId}/tasks`, task.id);
+    const docRef = doc(db, `users/${task.userId}/tasks`, task.id);
     updateDoc(docRef, {
       status: "completed"
     }).then(
@@ -47,22 +46,22 @@ export default function TaskModal({ task }) {
               className="h-10 cursor-pointer rounded-full"
             />
           </div>
-          <h1>{task.data().title}</h1>
+          <h1>{task.title}</h1>
         </div>
         <span
           className={
-            task.data().priorityValue?.toLowerCase() == "high"
+            task.priorityValue?.toLowerCase() == "high"
               ? "rounded-md text-white px-2 text-xs py-1 bg-red-500"
-              : task.data().priorityValue?.toLowerCase() == "mid"
+              : task.priorityValue?.toLowerCase() == "mid"
               ? "rounded-md text-white px-2 text-xs py-1 bg-yellow-500"
               : "rounded-md text-white px-2 text-xs py-1 bg-blue-500"
           }
         >
-          {task.data().priorityValue}
+          {task.priorityValue}
         </span>
       </div>
       <div className="text-gray-400 pb-4 cursor-pointer" onClick={() => setShowModal(true)}>
-        {task.data().description.slice(0, 30)}
+        {task.description.slice(0, 30)}
       </div>
       {showModal ? (
         <>
@@ -111,25 +110,25 @@ export default function TaskModal({ task }) {
                     <div className="pt-5">
                       <div className="mb-8">
                         <h1 className="font-medium text-lg">
-                          {task.data().title}
+                          {task.title}
                         </h1>
                         <p className="text-sm text-gray-500 pt-1">
-                          {task.data().description}
+                          {task.description}
                         </p>
                       </div>
                       <p className="font-medium text-sm">Description</p>
                       <p className="text-xs text-gray-500 pt-1">
-                        {task.data().description}
+                        {task.description}
                       </p>
                     </div>
                     <div className="pt-5">
                       <p className="font-medium text-sm">Due Date</p>
                       <div className="flex text-md font-normal items-center space-x-3 pt-5">
-                        <span>{new Date(task.data().dueDateTime).getDate()}</span>
+                        <span>{new Date(task.dueDateTime).getDate()}</span>
                         <span className="bg-[#004064] py-4 px-2 text-xs text-white rounded-lg">
-                        {new Date(task.data().dueDateTime).toLocaleDateString('en-us',{month: 'long'}).slice(0,3).toLowerCase()}
+                        {new Date(task.dueDateTime).toLocaleDateString('en-us',{month: 'long'}).slice(0,3).toLowerCase()}
                         </span>
-                        <span>{new Date(task.data().dueDateTime).getFullYear().toString().slice(2,4)}</span>
+                        <span>{new Date(task.dueDateTime).getFullYear().toString().slice(2,4)}</span>
                       </div>
                     </div>
                   </div>

@@ -6,7 +6,6 @@ import { auth, db } from '../firebase';
 function StartChatModal({openChat}) {
   const [showModal, setShowModal] = useState(false);
   const [users, setUsers] = useState([]);
-  console.log(openChat);
   useEffect(
     () =>
       onSnapshot(

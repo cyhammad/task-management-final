@@ -37,7 +37,7 @@ function Task({task}) {
   
   return (
     <div className='px-5 pt-5 pb-1 bg-white m-3 rounded-xl w-auto mb-3'>
-      <TaskModal task={task} />
+      <TaskModal task={task.title == undefined ? task.data(): task} />
       {/* <CommentsModal commentCount={props.commentCount} profileImage={faker.image.avatar()} />
       <div className={props.taskStatus == undefined && props.remainingTime == undefined ? "hidden": "flex justify-between pb-4"}>
         <span className={props.taskStatus == undefined ? "opacity-0": "rounded-md bg-[#656565] text-white px-3 text-xs py-[4px] cursor-pointer"}>
@@ -47,7 +47,7 @@ function Task({task}) {
           Est. {props.remainingTime}
         </span>
       </div> */}
-      <TaskOptions />
+      <TaskOptions task={task.title == undefined ? task.data(): task} />
     </div>
   )
 }
