@@ -80,6 +80,7 @@ export default function Home() {
                     desc={task.data().description}
                     projectId={task.data().projectId}
                     key={task.data().id}
+                    comments={task.data().comments}
                   />
               </>
             ))}

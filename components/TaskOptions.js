@@ -6,7 +6,7 @@ import {
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
-function TaskOptions({task}) {
+function TaskOptions({task, openModel}) {
   const [showOptions, setShowOptions] = useState(false);
   const [showUpdateOptions, setShowUpdateOptions] = useState(false);
   const updateStatus = async(status) => {
@@ -35,7 +35,7 @@ function TaskOptions({task}) {
           setShowUpdateOptions(false);
         }}
       >
-        <button className="px-8 py-1 text-sm">View details</button>
+        <button className="px-8 py-1 text-sm" onClick={()=>openModel(true)} >View details</button>
         <button
           className="border-t border-white py-1 text-sm"
           onMouseEnter={() => setShowUpdateOptions(true)}

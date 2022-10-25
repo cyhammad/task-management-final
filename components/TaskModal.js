@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { PaperClipIcon } from "@heroicons/react/24/outline";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import TaskOptions from "./TaskOptions";
+import CommentsModal from "./CommentsModal";
 
-export default function TaskModal({ task }) {
+export default function TaskModal({ task, projectTask }) {
   const [showModal, setShowModal] = useState(false);
   const [userPic, setUserPic] = useState("");
   const [remainingTime, setRemainingTime] = useState(null);
@@ -46,7 +48,7 @@ export default function TaskModal({ task }) {
               className="h-10 cursor-pointer rounded-full"
             />
           </div>
-          <h1>{task.title}</h1>
+          <h1 className="pr-5">{task.title}</h1>
         </div>
         <span
           className={
@@ -63,6 +65,16 @@ export default function TaskModal({ task }) {
       <div className="text-gray-400 pb-4 cursor-pointer" onClick={() => setShowModal(true)}>
         {task.description.slice(0, 30)}
       </div>
+      <CommentsModal commentCount={task.comments == null ? 0 : task.comments.length} />
+      <div className={task.status == undefined && task.dueDateTime == undefined ? "hidden": "flex justify-between pb-4"}>
+        <span className={task.status == undefined ? "opacity-0": "rounded-md bg-[#1D95E9] text-white px-3 text-xs flex items-center cursor-pointer"}>
+          {task.status}
+        </span>
+        <span className={task.dueDateTime == undefined ? "opacity-0": "rounded-sm bg-gray-200 text-gray-500 px-1 text-xs flex items-center h-5 cursor-pointer"}>
+          Est. {remainingTime}
+        </span>
+      </div>
+      {projectTask ? null :<TaskOptions task={task.title == undefined ? task.data(): task} openModel={setShowModal} />}
       {showModal ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">

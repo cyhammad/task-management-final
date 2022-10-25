@@ -83,7 +83,7 @@ function Project(props) {
             </span>
           </div>
         </div>
-        <CommentsModal commentCount={props.commentCount} />
+        <CommentsModal commentCount={props.comments == null ? 0 : props.comments.length} />
 
         <div className="flex justify-end">
           <EllipsisHorizontalIcon className="h-8 w-8" />

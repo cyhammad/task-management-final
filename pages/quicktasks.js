@@ -82,7 +82,7 @@ function QuickTasks() {
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 lg:min-h-screen lg:pb-10">
         <h1 className="text-3xl font-semibold mt-11">Quick Tasks</h1>
         <SubNavBar selectedTab="quicktasks" />
-        <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar">
+        <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar pb-60">
           <TaskColumn name="New Projects" taskCount={newTasks.length} viewMore={()=>viewMore("new")}>
             {newTasks.slice(0, newTaskCount).map((task) => (
               <>
