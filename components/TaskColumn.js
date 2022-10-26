@@ -10,7 +10,7 @@ function TaskColumn(props) {
     setAllVisible(true);
   }
   return (
-    <div className="bg-gradient-to-b from-[#F4F5F8] to-slate-50 pt-7 w-fit mt-5 rounded-md min-w-full sm:min-w-[50vw] md:min-w-[35vw] lg:min-w-[22vw] lg:min-h-[70vh]">
+    <div className="bg-gradient-to-b from-[#F4F5F8] to-slate-50 pt-7 w-fit mt-5 rounded-md min-w-full sm:min-w-[50vw] md:min-w-[35vw] lg:min-w-[25vw] 2xl:min-w-[22vw] lg:min-h-[70vh]">
       <div className="flex justify-between items-center px-5 font-medium">
         <h1 className="flex items-center">
           {props.name}

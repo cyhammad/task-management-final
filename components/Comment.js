@@ -1,91 +1,125 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-    ArrowUturnLeftIcon,
-  } from "@heroicons/react/24/outline";
-import {
-    HandThumbUpIcon
-  } from "@heroicons/react/24/solid";
+  ArrowLongLeftIcon,
+  ArrowUturnLeftIcon,
+} from "@heroicons/react/24/outline";
+import { HandThumbUpIcon } from "@heroicons/react/24/outline";
+import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "../firebase";
+import Image from "next/image";
+import Reply from "./Reply";
 
-
-function Comment(props) {
-
+function Comment({ key, comment, taskId, commentId }) {
+  const [user, setUser] = useState("");
+  const [showReplyField, setShowReplyField] = useState(false);
+  const [replies, setReplies] = useState([]);
+  const [replyInput, setReplyInput] = useState("");
+  useEffect(() => {
+    if (comment.addedBy != undefined) {
+      const docRef = doc(db, "users", comment.addedBy);
+      getDoc(docRef).then((docSnap) => {
+        setUser(docSnap.data());
+      });
+    }
+  }, [db]);
+  useEffect(
+    () =>
+      onSnapshot(
+        query(collection(db, `users/${comment.addedBy}/tasks/${taskId}/comments/${commentId}/replies`)),
+        (snapshot) => {
+          setReplies(snapshot.docs)
+        }
+      ),
+    [db]
+  );
+  const addReply = async () => {
+    const inprep = replyInput;
+    setReplyInput("");
+    const docRef = await addDoc(
+        collection(
+            db,
+            `users/${comment.addedBy}/tasks/${taskId}/comments/${commentId}/replies`
+        ),{
+            addedBy: auth.currentUser.uid,
+            reply: inprep,
+            createdAt: serverTimestamp(),
+            likedBy: [],
+        }   
+    )
+    console.log("Reply added with ", docRef.id)
+  };
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      addReply();
+    }
+  };
+  console.log("replies:", replies);
   return (
-    <div>
-      <div
-        className="flex space-x-5 items-center cursor-pointer mx-12 pt-5"
-      >
-        <div className=" rounded-md bg-white">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={props.profileImage}
+    <>
+      <div className="px-10 py-5 flex">
+        <div className="h-10">
+          <Image
+            src={user.profilePic}
             alt="profile"
-            className="h-10 cursor-pointer rounded-full"
+            height={50}
+            width={50}
+            className="cursor-pointer rounded-full"
           />
         </div>
-        <div>
-          <h1 className="font-medium">Beyond Solution</h1>
-          <p className="text-xs text-gray-500 pt-1">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit
-          </p>
+        <div className="flex flex-col pl-3 w-full">
+          <div className="flex items-center">
+            <p className="font-medium">{user.name}</p>
+            <p className="text-xs text-gray-400 leading-3 pl-5">
+              {comment.createdAt?.toDate().getUTCHours() + "h ago"}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">{comment.comment}</p>
+          </div>
+          <div className="flex pt-2">
+            <div className="flex  w-full text-xs text-[#004064]">
+              <div
+                className="flex pr-5 cursor-pointer"
+                onClick={() => setShowReplyField(!showReplyField)}
+              >
+                <ArrowLongLeftIcon className="h-4 w-4" />
+                <p className="pl-1">Reply</p>
+              </div>
+              <div className="flex">
+                <HandThumbUpIcon className="h-4 w-4" />
+                <p className="pl-1">{comment.likedBy?.length} Like</p>
+              </div>
+            </div>
+          </div>
+          <div className="">
+            {replies.map(reply=>(
+              <Reply key={reply.id} reply={reply} />
+            ))}
+          </div>
+          <div className={showReplyField ? "flex pt-5 items-center": "hidden"}>
+            <div className=" rounded-md bg-white">
+              <Image
+                src={auth.currentUser.photoURL}
+                alt="profile"
+                height={40}
+                width={40}
+                className="h-10 cursor-pointer rounded-full"
+              />
+            </div>
+            <div className="px-5 py-3 grow border border-blue-200 rounded-md flex mx-2 bg-white">
+              <input
+                type="text"
+                className="bg-inherit w-full focus:outline-none"
+                placeholder="Reply   ..."
+                onChange={(e) => setReplyInput(e.target.value)}
+                value={replyInput}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
+          </div>
         </div>
       </div>
-      <div className="flex space-x-1 items-center mx-28 mt-2">
-        <ArrowUturnLeftIcon className="w-3 h-3" />
-        <p className="text-[10px]">Reply</p>
-        <HandThumbUpIcon className="w-3 h-3 text-blue-500" />
-        <p className="text-[10px]">1 Like</p>
-      </div>
-      <div
-        className="flex space-x-5 items-center cursor-pointer mx-20 pt-5"
-        onClick={() => setShowModal(true)}
-      >
-        <div className=" rounded-md bg-white">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={props.profileImage}
-            alt="profile"
-            className="h-10 cursor-pointer rounded-full"
-          />
-        </div>
-        <div>
-          <h1 className="font-medium">Beyond Solution</h1>
-          <p className="text-xs text-gray-500 pt-1">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit
-          </p>
-        </div>
-      </div>
-      <div className="flex space-x-1 items-center mx-36 mt-2">
-        <ArrowUturnLeftIcon className="w-3 h-3" />
-        <p className="text-[10px]">Reply</p>
-        <HandThumbUpIcon className="w-3 h-3 text-blue-500" />
-        <p className="text-[10px]">1 Like</p>
-      </div>
-      <div
-        className="flex space-x-5 items-center cursor-pointer mx-20 pt-5"
-        onClick={() => setShowModal(true)}
-      >
-        <div className=" rounded-md bg-white">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={props.profileImage}
-            alt="profile"
-            className="h-10 cursor-pointer rounded-full"
-          />
-        </div>
-        <div>
-          <h1 className="font-medium">Beyond Solution</h1>
-          <p className="text-xs text-gray-500 pt-1">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit
-          </p>
-        </div>
-      </div>
-      <div className="flex space-x-1 items-center mx-36 mt-2">
-        <ArrowUturnLeftIcon className="w-3 h-3" />
-        <p className="text-[10px]">Reply</p>
-        <HandThumbUpIcon className="w-3 h-3 text-blue-500" />
-        <p className="text-[10px]">1 Like</p>
-      </div>
-    </div>
+    </>
   );
 }
 

@@ -21,7 +21,7 @@ export default function TaskModal({ task, projectTask }) {
     const date = new Date();
     const dueDate = new Date(task.dueDateTime)
     const diff = new Date(date.getTime() - dueDate.getTime())
-    setRemainingTime(diff.getUTCDay() +"D "+diff.getUTCHours()+" Hrs "+diff.getUTCMinutes()+" mins");
+    setRemainingTime(diff.getUTCDay() +"D "+diff.getUTCHours()+"hr "+diff.getUTCMinutes()+"m");
   },[task])
   const handleMarkComplete = async() => {
     const docRef = doc(db, `users/${task.userId}/tasks`, task.id);
@@ -65,12 +65,12 @@ export default function TaskModal({ task, projectTask }) {
       <div className="text-gray-400 pb-4 cursor-pointer" onClick={() => setShowModal(true)}>
         {task.description.slice(0, 30)}
       </div>
-      <CommentsModal commentCount={task.comments == null ? 0 : task.comments.length} />
+      <CommentsModal task={task} taskType={"quicktask"} />
       <div className={task.status == undefined && task.dueDateTime == undefined ? "hidden": "flex justify-between pb-4"}>
-        <span className={task.status == undefined ? "opacity-0": "rounded-md bg-[#1D95E9] text-white px-3 text-xs flex items-center cursor-pointer"}>
+        <span className={task.status == undefined ? "opacity-0": "h-fit rounded-md bg-[#1D95E9] text-white px-2 py-[2px] text-xs flex items-center cursor-pointer"}>
           {task.status}
         </span>
-        <span className={task.dueDateTime == undefined ? "opacity-0": "rounded-sm bg-gray-200 text-gray-500 px-1 text-xs flex items-center h-5 cursor-pointer"}>
+        <span className={task.dueDateTime == undefined ? "opacity-0": "rounded-sm bg-gray-200 text-gray-500 px-2 py-[2px] text-xs flex items-center h-fit ml-5 cursor-pointer"}>
           Est. {remainingTime}
         </span>
       </div>
