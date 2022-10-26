@@ -13,9 +13,11 @@ import { useAuth } from "../context/AuthContext";
 import { collection, query } from "firebase/firestore";
 import { db } from "../firebase";
 import SearchModal from "./SearchModal";
+import Router, { useRouter } from "next/router";
 
 function Header(props) {
   const { user, logout } = useAuth();
+  const {router} = useRouter();
 
   const toggleLogoutDropDown = () => {
     document.getElementById("logoutdropdown").classList.toggle("hidden");
@@ -56,7 +58,7 @@ function Header(props) {
             {/* Right */}
             <div className="flex items-center justify-end space-x-4">
               <SearchModal />
-              <div className="relative navBtn">
+              <div className="relative navBtn" onClick={()=>Router.push("/notifications")}>
                 <div className="absolute h-2 w-2 bg-yellow-400 rounded-full right-1"></div>
                 <BellIcon className="navBtn" />
               </div>

@@ -67,11 +67,11 @@ function Chats() {
         {/* Header */}
         <Header selectedTab="work" />
   
-        {/* Tasks */}
+        {/* Chats */}
         <div className='px-4 sm:px-6 md:px-8 lg:px-10 min-h-[75vh] lg:min-h-[85vh] pb-20'>
           <h1 className="text-3xl font-semibold mt-11">Chats</h1>
           <SubNavBar selectedTab="chats" />
-          <div className="lg:grid lg:grid-cols-4 lg:gap-4 mt-5">
+          <div className="lg:grid lg:grid-cols-4 lg:gap-4 mt-5 flex flex-col">
             <div className="bg-[#F4F5F8] py-5 px-3 rounded-lg lg:block min-h-[70vh]">
               <div className="flex justify-between items-center font-medium mb-3">
                 <p>All Messages</p>
@@ -85,7 +85,7 @@ function Chats() {
               </div>
             </div>
 
-            <div className="hidden lg:block bg-[#F4F5F8] rounded-lg col-span-3 py-5 px-3 min-h-[70vh]">
+            <div className="bg-[#F4F5F8] rounded-lg col-span-3 py-5 px-3 min-h-[70vh]">
               {openedChat.length == 0 ? <div className='text-center text-gray-400'>No Opened Chat</div> : <OpenedMessage chatDetails={openedChat} />}
             </div>
           </div>

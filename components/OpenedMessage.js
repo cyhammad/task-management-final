@@ -130,6 +130,18 @@ function OpenedMessage({ chatDetails }) {
         with: auth.currentUser.uid,
       }
     );
+    await addDoc(
+      collection(
+        db,
+        `users/${chatDetails.with}/notifications`,
+      ),{
+        isSeen: false,
+        notification: `New Message from ${auth.currentUser.displayName}`,
+        message: msg,
+        from: auth.currentUser.uid,
+        timeSent: serverTimestamp(),
+      }
+    )
   };
   const addFileToMsg = (e) => {
     const reader = new FileReader();

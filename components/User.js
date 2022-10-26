@@ -21,10 +21,10 @@ function User({profileImage, name, email, phone, lastSeen, status, select}) {
               <Image src={profileImage} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" />
           </div>
           <p className="font-medium w-24">{name.charAt(0).toUpperCase()+ name.slice(1)}</p>
-          <p className="text-gray-500 grow text-center w-36">{email}</p>
-          <p className="text-gray-500 grow text-center">{phone}</p>
-          <p className="bg-[#004064] text-white text-center px-4 py-1">{status}</p>
-          <p className="text-gray-500 grow text-center ">{lastSeen}</p>
+          <p className="text-gray-500 grow text-center w-36 hidden md:flex">{email}</p>
+          <p className="text-gray-500 grow text-center hidden md:flex">{phone}</p>
+          <p className="bg-[#004064] text-white text-center px-4 py-1 hidden md:flex">{status}</p>
+          <p className="text-gray-500 grow text-center hidden md:flex">{lastSeen}</p>
           <TrashIcon className="w-5 h-5 grow" />
           <EllipsisHorizontalIcon className="h-8 w-8" />
         </div>:
@@ -34,10 +34,10 @@ function User({profileImage, name, email, phone, lastSeen, status, select}) {
             <Image src={profileImage} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" />
           </div>
           <p className="font-medium w-24">{name.charAt(0).toUpperCase()+ name.slice(1)}</p>
-          <p className="text-gray-500 grow text-center w-36">{email}</p>
-          <p className="text-gray-500 grow text-center">{phone}</p>
-          <p className="bg-[#D5FFCE] text-amber-700 text-center px-4 py-1">{status}</p>
-          <p className="text-gray-500 grow text-center ">{lastSeen}</p>
+          <p className="text-gray-500 grow text-center w-36 hidden md:flex">{email}</p>
+          <p className="text-gray-500 grow text-center hidden md:flex">{phone}</p>
+          <p className="bg-[#D5FFCE] text-amber-700 text-center px-4 py-1 hidden md:flex">{status}</p>
+          <p className="text-gray-500 grow text-center hidden md:flex">{lastSeen}</p>
           <TrashIcon className="w-5 h-5 grow" />
           <EllipsisHorizontalIcon className="h-8 w-8" />
         </div>

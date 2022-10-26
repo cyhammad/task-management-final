@@ -35,7 +35,7 @@ function Categories() {
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 min-h-[75vh] lg:min-h-[85vh]">
         <h1 className="text-3xl font-semibold mt-11">Add/Edit Categories</h1>
         <SubNavBar selectedTab="categories" />
-        <div className="bg-blue-50 mt-5 pt-6 px-4 rounded-xl min-h-[60vh] lg:min-h-[65vh]">
+        <div className="bg-[#F4F5F8] mt-5 pt-6 px-4 rounded-xl min-h-[60vh] lg:min-h-[65vh]">
           <div className="flex justify-between">
             <h1 className="font-medium">Categories</h1>
             <AddCategoryModal />

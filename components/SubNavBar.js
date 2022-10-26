@@ -3,7 +3,7 @@ import React from 'react'
 
 function SubNavBar({selectedTab, children}) {
   return (
-    <div className='flex justify-between items-center border-b-2 border-gray-100'>
+    <div className='flex flex-col lg:flex-row justify-between items-center border-b-2 border-gray-100'>
       <div className="h-8 mt-4 flex justify-between lg:justify-start">
         <div className={selectedTab == "projects" ? "sub-nav-item sub-nav-selected": "sub-nav-item"}>
             <div className="text-center">
@@ -51,7 +51,9 @@ function SubNavBar({selectedTab, children}) {
             </div>
         </div>
       </div>
-      {children}
+      <div className='pt-3 lg:pt-0'>
+        {children}
+      </div>
     </div>
   )
 }
