@@ -23,14 +23,15 @@ import Comment from "./Comment";
 import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
 
-function CommentsModal({ task, taskType }) {
+function CommentsModal({ userId, projectId, taskId, taskType }) {
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [comments, setComments] = useState([]);
   const [inpComment, setInpComment] = useState("");
-
+  const useEffectQuery = taskType == 'quicktask' ? `users/${userId}/tasks/${taskId}/comments` : `users/${userId}/projects/${projectId}/comments`;
+  console.log(useEffectQuery);  
   useEffect(() => onSnapshot(
-    query(collection(db, `users/${task.userId}/tasks/${task.taskId}/comments`), orderBy("createdAt")),
+    query(collection(db, useEffectQuery), orderBy("createdAt")),
     (snapshot) => setComments(snapshot.docs)
   ), [db]);
   const addComment = async () => {
@@ -39,7 +40,7 @@ function CommentsModal({ task, taskType }) {
     const docRef = await addDoc(
         collection(
             db,
-            `users/${task.userId}/tasks/${task.taskId}/comments`
+            useEffectQuery
         ),{
             addedBy: auth.currentUser.uid,
             comment: inpcom,
@@ -80,7 +81,7 @@ function CommentsModal({ task, taskType }) {
       </div>
       {showModal ? (
         <>
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+          <div className="justify-center items-center flex fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-4xl lg:min-w-[70vw]">
               {/*content*/}
               <div className="border-0 rounded-xl shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
@@ -119,9 +120,11 @@ function CommentsModal({ task, taskType }) {
                   </button>
                 </div>
                 {/*body*/}
-                {comments.map((comment) => (
-                  <Comment comment={comment.data()} key={comment.id} taskId={task.taskId} commentId={comment.id} />
-                ))}
+                <div className="overflow-auto scrollbar max-h-[60vh]">
+                  {comments.map((comment) => (
+                    <Comment comment={comment.data()} key={comment.id} taskId={taskId} commentId={comment.id} />
+                  ))}
+                </div>
                 <div className="mb-10"></div>
               </div>
             </div>

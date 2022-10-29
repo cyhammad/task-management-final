@@ -10,11 +10,11 @@ function Notifications() {
     () =>
       onSnapshot(
         query(
-          collection(db, `users/${auth.currentUser.uid}/notifications/`),
-          orderBy("timeSent")
+          collection(db, `users/${auth.currentUser.uid}/notifications`)
         ),
         (snapshot) => {
           setNotifList(snapshot.docs);
+          console.log(snapshot.d)
         }
       ),
     [db]
@@ -35,7 +35,7 @@ function Notifications() {
         <h1 className="text-3xl font-semibold mt-11">Notifications</h1>
         <div className="bg-[#F4F5F8] mt-5 pt-6 px-4 rounded-xl min-h-[60vh] lg:min-h-[65vh]">
           {notifList.length != 0 ? notifList.map((notif) => (
-            <div key={notif.id}>{notif.data().notification}</div>
+            <div key={notif.id}>{notif.data().title}</div>
           )):
           (
             <p>No Notifications</p>

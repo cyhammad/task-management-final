@@ -10,30 +10,6 @@ import { auth, db } from '../firebase';
 import StartChatModal from '../components/StartChatModal';
 import { useEffect, useState } from 'react';
 
-
-/*
-chat = {
-  cid: 100, 
-  members: ["p1@gmail.com", "p2@gmail.com"]
-  messages: [
-    {
-      from: 0,
-      to: 1,
-      text: "Hi How are you?",
-      status: "Unread/Read",
-      time: serverTime
-    },
-    {
-      from: 1,
-      to: 0,
-      text: "I am fine",
-      status: "Read/Unread",
-      time: serverTime
-    } 
-  ]
-}
-*/
-
 function Chats() {
   const [chatList, setChatList] = useState([]);
   const [openedChat, setOpenedChat] = useState([]);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import {
@@ -13,6 +13,17 @@ import {
 
 function AddUserModal() {
   const [showModal, setShowModal] = useState(false);
+  const filePickerRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+
+  const [data, setData] = useState({
+    displayName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+  });
   const handleSignup = async (e) => {
     e.preventDefault();
     if (loading) return;
@@ -82,112 +93,120 @@ function AddUserModal() {
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-4xl lg:min-w-[600px]">
               {/*content*/}
-              <form>
-                <input
-                  ref={filePickerRef}
-                  onChange={addImageToProfile}
-                  type="file"
-                  hidden
-                />
-                <div className="flex justify-center items-center py-2">
-                  {selectedFile ? (
-                    <Image
-                      className="cursor-pointer rounded-lg"
-                      src={selectedFile}
-                      height={100}
-                      width={100}
-                      alt="selected image"
-                    />
-                  ) : (
-                    <div className="bg-blue-50 p-8 flex justify-center items-center rounded-xl">
-                      <div
-                        onClick={() => filePickerRef.current.click()}
-                        className="bg-[#004064] flex justify-center items-center text-white px-2 py-2 rounded-lg cursor-pointer"
-                      >
-                        <PlusIcon className="h-6 w-6" />
+              <div className="bg-white p-10 rounded-md">
+                <button
+                  className="w-4 h-4 bg-slate-700 flex justify-center items-center text-white rounded-full text-[9px] m-2 float-right"
+                  onClick={() => setShowModal(false)}
+                >
+                  x
+                </button>
+                <form onSubmit={handleSignup}>
+                  <input
+                    ref={filePickerRef}
+                    onChange={addImageToProfile}
+                    type="file"
+                    hidden
+                  />
+                  <div className="flex justify-center items-center py-2">
+                    {selectedFile ? (
+                      <Image
+                        className="cursor-pointer rounded-lg"
+                        src={selectedFile}
+                        height={100}
+                        width={100}
+                        alt="selected image"
+                      />
+                    ) : (
+                      <div className="bg-blue-50 p-8 flex justify-center items-center rounded-xl">
+                        <div
+                          onClick={() => filePickerRef.current.click()}
+                          className="bg-[#004064] flex justify-center items-center text-white px-2 py-2 rounded-lg cursor-pointer"
+                        >
+                          <PlusIcon className="h-6 w-6" />
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-col items-center  justify-center pb-3">
-                  <p className="font-medium">Upload Profile Picture</p>
-                  <p className="text-xs text-gray-500">
-                    Select a profile picture from your device
-                  </p>
-                </div>
-                <div className="shadow-md flex justify-center items-center p-5 bg-white rounded mb-4">
-                  <UserIcon className="w-6 h-6 text-gray-500" />
-                  <input
-                    value={data.displayName}
-                    className="focus:outline-none pl-4 w-full"
-                    type="text"
-                    name="displayName"
-                    id="displayName"
-                    placeholder="Name    "
-                    onChange={(e) =>
-                      setData({ ...data, displayName: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="shadow-md flex justify-center items-center p-5 bg-white rounded mb-4">
-                  <EnvelopeIcon className="w-6 h-6 text-gray-500" />
-                  <input
-                    value={data.email}
-                    className="focus:outline-none pl-4 w-full"
-                    type="email"
-                    name="email"
-                    id="email"
-                    placeholder="Email"
-                    onChange={(e) =>
-                      setData({ ...data, email: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="shadow-md flex justify-center items-center p-5 bg-white rounded mb-4">
-                  <PhoneIcon className="w-6 h-6 text-gray-500" />
-                  <input
-                    value={data.phoneNumber}
-                    className="focus:outline-none pl-4 w-full"
-                    type="phoneNumber"
-                    name="phoneNumber"
-                    id="phoneNumber"
-                    placeholder="Phone Number"
-                    onChange={(e) =>
-                      setData({ ...data, phoneNumber: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="shadow-md flex justify-center items-center p-5 bg-white rounded">
-                  <LockClosedIcon className="w-6 h-6 text-gray-500" />
-                  <input
-                    value={data.password}
-                    className="focus:outline-none pl-4 w-full"
-                    type={showPass ? "text" : "password"}
-                    name="password"
-                    id="password"
-                    placeholder="Password"
-                    onChange={(e) =>
-                      setData({ ...data, password: e.target.value })
-                    }
-                  />
-                  {showPass ? (
-                    <EyeIcon
-                      className="w-6 h-6 text-gray-500 hover:text-black cursor-pointer"
-                      onClick={() => setShowPass(false)}
+                    )}
+                  </div>
+                  <div className="flex flex-col items-center  justify-center pb-3">
+                    <p className="font-medium">Upload Profile Picture</p>
+                    <p className="text-xs text-gray-500">
+                      Select a profile picture from your device
+                    </p>
+                  </div>
+                  <div className="shadow-md flex justify-center items-center p-5 bg-white rounded mb-4">
+                    <UserIcon className="w-6 h-6 text-gray-500" />
+                    <input
+                      value={data.displayName}
+                      className="focus:outline-none pl-4 w-full"
+                      type="text"
+                      name="displayName"
+                      id="displayName"
+                      placeholder="Name    "
+                      onChange={(e) =>
+                        setData({ ...data, displayName: e.target.value })
+                      }
                     />
-                  ) : (
-                    <EyeSlashIcon
-                      className="w-6 h-6 text-gray-500 hover:text-black cursor-pointer"
-                      onClick={() => setShowPass(true)}
+                  </div>
+                  <div className="shadow-md flex justify-center items-center p-5 bg-white rounded mb-4">
+                    <EnvelopeIcon className="w-6 h-6 text-gray-500" />
+                    <input
+                      value={data.email}
+                      className="focus:outline-none pl-4 w-full"
+                      type="email"
+                      name="email"
+                      id="email"
+                      placeholder="Email"
+                      onChange={(e) =>
+                        setData({ ...data, email: e.target.value })
+                      }
                     />
-                  )}
-                </div>
-                <input
-                  className="shadow-md flex justify-center items-center p-5 bg-[#004064] rounded mt-7 cursor-pointer text-white w-full"
-                  type="submit"
-                  value={loading ? "Creating Account..." : "Sign Up"}
-                />
-              </form>
+                  </div>
+                  <div className="shadow-md flex justify-center items-center p-5 bg-white rounded mb-4">
+                    <PhoneIcon className="w-6 h-6 text-gray-500" />
+                    <input
+                      value={data.phoneNumber}
+                      className="focus:outline-none pl-4 w-full"
+                      type="phoneNumber"
+                      name="phoneNumber"
+                      id="phoneNumber"
+                      placeholder="Phone Number"
+                      onChange={(e) =>
+                        setData({ ...data, phoneNumber: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="shadow-md flex justify-center items-center p-5 bg-white rounded">
+                    <LockClosedIcon className="w-6 h-6 text-gray-500" />
+                    <input
+                      value={data.password}
+                      className="focus:outline-none pl-4 w-full"
+                      type={showPass ? "text" : "password"}
+                      name="password"
+                      id="password"
+                      placeholder="Password"
+                      onChange={(e) =>
+                        setData({ ...data, password: e.target.value })
+                      }
+                    />
+                    {showPass ? (
+                      <EyeIcon
+                        className="w-6 h-6 text-gray-500 hover:text-black cursor-pointer"
+                        onClick={() => setShowPass(false)}
+                      />
+                    ) : (
+                      <EyeSlashIcon
+                        className="w-6 h-6 text-gray-500 hover:text-black cursor-pointer"
+                        onClick={() => setShowPass(true)}
+                      />
+                    )}
+                  </div>
+                  <input
+                    className="shadow-md flex justify-center items-center p-5 bg-[#004064] rounded mt-7 cursor-pointer text-white w-full"
+                    type="submit"
+                    value={loading ? "Creating Account..." : "Sign Up"}
+                  />
+                </form>
+              </div>
             </div>
           </div>
           <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>

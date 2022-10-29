@@ -136,10 +136,10 @@ function OpenedMessage({ chatDetails }) {
         `users/${chatDetails.with}/notifications`,
       ),{
         isSeen: false,
-        notification: `New Message from ${auth.currentUser.displayName}`,
-        message: msg,
-        from: auth.currentUser.uid,
-        timeSent: serverTimestamp(),
+        title: `New Message from ${auth.currentUser.displayName}`,
+        body: msg,
+        sentBy: auth.currentUser.uid,
+        createdAt: serverTimestamp(),
       }
     )
   };

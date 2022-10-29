@@ -4,6 +4,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import TaskOptions from "./TaskOptions";
 import CommentsModal from "./CommentsModal";
+import Image from "next/image";
 
 export default function TaskModal({ task, projectTask }) {
   const [showModal, setShowModal] = useState(false);
@@ -39,33 +40,34 @@ export default function TaskModal({ task, projectTask }) {
         className="flex justify-between items-center pb-4 cursor-pointer"
         onClick={() => setShowModal(true)}
       >
-        <div className="flex space-x-2 items-center">
+        <div className="flex space-x-2 items-center max-w-[80%]">
           <div className=" rounded-md bg-white">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={userPic}
-              alt="profile"
-              className="h-10 cursor-pointer rounded-full"
+              width={40}
+              height={40}
+              className="rounded-full"
+              alt="user"
             />
           </div>
-          <h1 className="pr-5">{task.title}</h1>
+          <h1>{task.title.slice(0,18)}{task.title.length > 18 ? " . . .": null}</h1>
         </div>
         <span
           className={
             task.priorityValue?.toLowerCase() == "high"
-              ? "rounded-md text-white px-2 text-xs py-1 bg-red-500"
-              : task.priorityValue?.toLowerCase() == "mid"
-              ? "rounded-md text-white px-2 text-xs py-1 bg-yellow-500"
-              : "rounded-md text-white px-2 text-xs py-1 bg-blue-500"
+              ? "rounded-md text-white px-2 text-xs py-1 bg-[#FF3743]"
+              : task.priorityValue?.toLowerCase() == "mid" || task.priorityValue?.toLowerCase() == "normal"
+              ? "rounded-md text-white px-2 text-xs py-1 bg-[#00CC14]"
+              : "rounded-md text-white px-2 text-xs py-1 bg-[#0093E5]"
           }
         >
-          {task.priorityValue}
+          {task.priorityValue == undefined || task.priorityValue.toLowerCase() == "normal" ? "Mid" : task.priorityValue}
         </span>
       </div>
       <div className="text-gray-400 pb-4 cursor-pointer" onClick={() => setShowModal(true)}>
         {task.description.slice(0, 30)}
       </div>
-      <CommentsModal task={task} taskType={"quicktask"} />
+      <CommentsModal taskId={task.taskId} userId={task.userId} taskType={"quicktask"} />
       <div className={task.status == undefined && task.dueDateTime == undefined ? "hidden": "flex justify-between pb-4"}>
         <span className={task.status == undefined ? "opacity-0": "h-fit rounded-md bg-[#1D95E9] text-white px-2 py-[2px] text-xs flex items-center cursor-pointer"}>
           {task.status}

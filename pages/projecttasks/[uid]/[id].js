@@ -15,7 +15,7 @@ import Header from "../../../components/Header";
 import ProjectTaskIns from "../../../components/ProjectTask";
 import SubNavBar from "../../../components/SubNavBar";
 import Task from "../../../components/Task";
-import TaskColumn from "../../../components/TaskColumn";
+import Column from "../../../components/Column";
 import { useAuth } from "../../../context/AuthContext";
 import { db } from "../../../firebase";
 
@@ -68,6 +68,20 @@ function ProjectTask() {
       setCompletedTaskCount(completedTasks.length)
     }
   }
+  const viewLess = (task) => {
+    if (task == "new") {
+      setNewTaskCount(3);
+    }
+    if (task == "todo") {
+      setTodoTaskCount(3);
+    }
+    if (task == "inProgress") {
+      setInProgressTaskCount(3);
+    }
+    if (task == "completed") {
+      setCompletedTaskCount(3);
+    }
+  };
   return (
     <div className="bg-default">
       <Head>
@@ -83,27 +97,27 @@ function ProjectTask() {
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 min-h-screen">
         <h1 className="text-3xl font-bold mt-11">Project Tasks</h1>
         <SubNavBar selectedTab="projects" />
-        <div className="flex space-x-5 w-full overflow-x-scroll scroll-smooth scrollbar">
-          <TaskColumn name="New Projects" taskCount={newTasks.length} viewMore={()=>viewMore("new")}>
-            {newTasks.map((task) => (
+        <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar pb-60">
+          <Column name="New Projects" taskCount={newTasks.length} viewMore={()=>viewMore("new")} viewLess={()=>viewLess("new")} >
+            {newTasks.slice(0, newTaskCount).map((task) => (
               <ProjectTaskIns task={task} projectId={id} key={task.taskId} />
             ))}
-          </TaskColumn>
-          <TaskColumn name="Todo" taskCount={todoTasks.length} viewMore={()=>viewMore("todo")} >
-            {todoTasks.map((task) => (
+          </Column>
+          <Column name="Todo" taskCount={todoTasks.length} viewMore={()=>viewMore("todo")} viewLess={()=>viewLess("todo")} >
+            {todoTasks.slice(0, todoTaskCount).map((task) => (
               <ProjectTaskIns task={task} projectId={id} key={task.taskId} />
             ))}
-          </TaskColumn>
-          <TaskColumn name="In Progress" taskCount={inProgressTasks.length} viewMore={()=>viewMore("inProgress")}>
-            {inProgressTasks.map((task) => (
+          </Column>
+          <Column name="In Progress" taskCount={inProgressTasks.length} viewMore={()=>viewMore("inProgress")} viewLess={()=>viewLess("inProgress")} >
+            {inProgressTasks.slice(0, inProgressTaskCount).map((task) => (
               <ProjectTaskIns task={task} projectId={id} key={task.taskId} />
             ))}
-          </TaskColumn>
-          <TaskColumn name="Completed" taskCount={completedTasks.length} viewMore={()=>viewMore("completed")}>
-            {completedTasks.map((task) => (
+          </Column>
+          <Column name="Completed" taskCount={completedTasks.length} viewMore={()=>viewMore("completed")} viewLess={()=>viewLess("completed")} >
+            {completedTasks.slice(0, completedTaskCount).map((task) => (
               <ProjectTaskIns task={task} projectId={id} key={task.taskId} />
             ))}
-          </TaskColumn>
+          </Column>
         </div>
       </div>
       {/* Modal */}

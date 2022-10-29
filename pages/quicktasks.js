@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import SubNavBar from "../components/SubNavBar";
 import Task from "../components/Task";
-import TaskColumn from "../components/TaskColumn";
+import Column from "../components/Column";
 import { useAuth } from "../context/AuthContext";
 import { auth, db } from "../firebase";
 
@@ -83,34 +83,34 @@ function QuickTasks() {
         <h1 className="text-3xl font-semibold mt-11">Quick Tasks</h1>
         <SubNavBar selectedTab="quicktasks" />
         <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar pb-60">
-          <TaskColumn name="New Projects" taskCount={newTasks.length} viewMore={()=>viewMore("new")}>
+          <Column name="New Projects" taskCount={newTasks.length} viewMore={()=>viewMore("new")}>
             {newTasks.slice(0, newTaskCount).map((task) => (
               <>
                 <Task task={task} />
               </>
             ))}
-          </TaskColumn>
-          <TaskColumn name="Todo" taskCount={todoTasks.length} viewMore={()=>viewMore("todo")} >
+          </Column>
+          <Column name="Todo" taskCount={todoTasks.length} viewMore={()=>viewMore("todo")} >
             {todoTasks.slice(0, todoTaskCount).map((task) => (
               <>
                 <Task task={task} />
               </>
             ))}
-          </TaskColumn>
-          <TaskColumn name="In Progress" taskCount={inProgressTasks.length} viewMore={()=>viewMore("inProgress")} >
+          </Column>
+          <Column name="In Progress" taskCount={inProgressTasks.length} viewMore={()=>viewMore("inProgress")} >
             {inProgressTasks.slice(0, inProgressTaskCount).map((task) => (
               <>
                 <Task task={task} />
               </>
             ))}
-          </TaskColumn>
-          <TaskColumn name="Completed" taskCount={completedTasks.length} viewMore={()=>viewMore("completed")} >
+          </Column>
+          <Column name="Completed" taskCount={completedTasks.length} viewMore={()=>viewMore("completed")} >
             {completedTasks.slice(0, completedTaskCount).map((task) => (
               <>
                 <Task task={task} />
               </>
             ))}
-          </TaskColumn>
+          </Column>
         </div>
       </div>
       {/* Modal */}

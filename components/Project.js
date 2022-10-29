@@ -7,6 +7,9 @@ import TaskOptions from "./TaskOptions";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
+import Image from "next/image";
+import { toast } from "react-toastify";
+import ProjectOptions from "./ProjectOptions";
 
 function Project(props) {
   const [userPic, setUserPic] = useState("");
@@ -21,7 +24,7 @@ function Project(props) {
   }, [props.userId]);
   const navigateTasks = () => {
     if (props.taskNumber == 0){
-      console.log("No tasks")
+      toast("No tasks in this project")
     }
     else{
       router.push(`/projecttasks/${props.userId}/${props.projectId}`)
@@ -30,16 +33,17 @@ function Project(props) {
   return (
     <div>
       <div className="px-5 pt-5 pb-1 bg-white m-3 rounded-xl w-auto mb-3">
-        <div className="cursor-pointer" onClick={()=>navigateTasks()}>
-          <div className="flex justify-between items-center pb-4 cursor-pointer">
+        <div className="cursor-pointer">
+          <div className="flex justify-between items-center pb-4 cursor-pointer" onClick={()=>navigateTasks()}>
             <div className="flex space-x-2 items-center">
               <div className=" rounded-md bg-white">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={userPic}
-                  alt="profile"
-                  className="h-10 cursor-pointer rounded-full"
-                />
+              <Image
+                src={userPic}
+                width={40}
+                height={40}
+                className="rounded-full"
+                alt="user"
+              />
               </div>
               <h1>{props.name}</h1>
             </div>
@@ -56,12 +60,14 @@ function Project(props) {
             </span>
           </div>
           <div className="text-gray-400 pb-4">{props.desc}</div>
+          <CommentsModal projectId={props.projectId} userId={props.userId} taskType={'project'} />
           <div
             className={
               props.taskNumber == undefined && props.remainingTime == undefined
                 ? "hidden"
-                : "flex justify-between pb-4"
+                : "flex justify-between py-4"
             }
+            onClick={()=>navigateTasks()}
           >
             <span
               className={
@@ -84,9 +90,7 @@ function Project(props) {
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <EllipsisHorizontalIcon className="h-8 w-8" />
-        </div>
+        <ProjectOptions userId={props.userId} projectId={props.projectId} taskNumber={props.taskNumber} />
       </div>
     </div>
   );

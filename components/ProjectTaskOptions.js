@@ -61,7 +61,7 @@ function ProjectTaskOptions({task, projectId}) {
             onClick={() => updateStatus("inprogress")}
           >
             In Progress
-          </button>
+          </button> 
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
             onClick={() => updateStatus("inprogress")}

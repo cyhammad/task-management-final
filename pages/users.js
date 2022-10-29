@@ -91,8 +91,9 @@ function Users({userList}) {
             <>
             <User
                 name={user.name}
+                userId={user.uid}
                 email={user.email}
-                phone={user.phone ? user.phone : "0000 0000000"}
+                phone={user.phoneNumber ? user.phoneNumber : "0000 0000000"}
                 status="active"
                 profileImage={user.profilePic}
                 lastSeen="12 mins ago."

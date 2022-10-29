@@ -5,12 +5,17 @@ import {
 } from "@heroicons/react/24/outline";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { useRouter } from "next/router";
 
-function TaskOptions({ task, openModel }) {
+function ProjectOptions({ projectId, userId, taskNumber }) {
   const [showOptions, setShowOptions] = useState(false);
   const [showUpdateOptions, setShowUpdateOptions] = useState(false);
+  const router = useRouter();
+  const viewDetails = () => {
+    taskNumber != 0 ? router.push(`/projecttasks/${userId}/${projectId}`) : alert("No tasks in this project");
+  };
   const updateStatus = async (status) => {
-    const docRef = doc(db, `users/${task.userId}/tasks`, task.taskId);
+    const docRef = doc(db, `users/${userId}/projects`, projectId);
     updateDoc(docRef, {
       status: status,
     }).then(() => {
@@ -33,7 +38,7 @@ function TaskOptions({ task, openModel }) {
           setShowUpdateOptions(false);
         }}
       >
-        <button className="px-8 py-1 text-sm" onClick={() => openModel(true)}>
+        <button className="px-8 py-1 text-sm" onClick={()=>viewDetails()}>
           View details
         </button>
         <button
@@ -102,4 +107,4 @@ function TaskOptions({ task, openModel }) {
   );
 }
 
-export default TaskOptions;
+export default ProjectOptions;
