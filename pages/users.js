@@ -119,10 +119,12 @@ function Users({userList}) {
 }
 export async function getServerSideProps() {
   var userList = [];
-  const users = query(collection(db, "users"), where("name", "!=", 'Admin'));
+  const users = query(collection(db, "users"));
   const querySnapshot = await getDocs(users);
   querySnapshot.forEach((doc) => {
-    userList.push(JSON.parse(JSON.stringify(doc.data())));
+    if (doc.data().superuser !== true){
+      userList.push(JSON.parse(JSON.stringify(doc.data())));
+    }
   });
   return {
     props: {

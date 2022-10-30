@@ -5,6 +5,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import DeleteUserModal from './DeleteUserModal';
+import { UserIcon } from '@heroicons/react/24/solid';
 
 function User({profileImage, name, email, phone, lastSeen, status, select, userId}) {
   const [selected, setSelected] = useState(select)
@@ -19,7 +20,7 @@ function User({profileImage, name, email, phone, lastSeen, status, select, userI
         <div className="bg-[#F4F5F8] mx-2 px-2 py-3 h-20 border-b border-gray-300 flex items-center gap-x-5 justify-between cursor-pointer">
           <input type="checkbox" name="selected" id="selected" className="w-4 h-4 checked:bg-[#004064]" onClick={()=>setSelected(false)} checked />
           <div className=" rounded-md bg-white">
-              <Image src={profileImage} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" />
+              {profileImage !== "" ? <Image src={profileImage} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" /> : <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer"><UserIcon className="h-6 w-6 text-blue-500" /></div>}
           </div>
           <p className="font-medium w-[50%] md:w-[10%]">{name.charAt(0).toUpperCase()+ name.slice(1)}</p>
           <p className="text-gray-500 grow text-center w-[20%] hidden md:flex">{email}</p>
@@ -34,7 +35,7 @@ function User({profileImage, name, email, phone, lastSeen, status, select, userI
         <div className="mx-2 px-2 py-3 h-20 border-b border-gray-300 flex items-center gap-x-5 justify-between cursor-pointer" >
           <input type="checkbox" name="selected" id="selected" className="w-4 h-4 checked:bg-[#004064]" onClick={()=>setSelected(true)} />
           <div className=" rounded-md bg-white flex items-center">
-            <Image src={profileImage} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" />
+            {profileImage !== "" ? <Image src={profileImage} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" /> : <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer"><UserIcon className="h-6 w-6 text-blue-500" /></div>}
           </div>
           <p className="font-medium w-[50%] md:w-[10%]">{name.charAt(0).toUpperCase()+ name.slice(1)}</p>
           <p className="text-gray-500 grow text-center w-[20%] hidden md:flex">{email}</p>

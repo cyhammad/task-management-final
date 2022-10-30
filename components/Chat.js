@@ -1,3 +1,4 @@
+import { UserIcon } from '@heroicons/react/24/solid';
 import { doc, getDoc } from 'firebase/firestore';
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
@@ -23,7 +24,7 @@ function Chat({chatDetails, onClick}) {
       <div onClick={onClick}>
         <div className="bg-white px-4 py-4 flex space-x-3 hover:bg-[#F3F3F3] cursor-pointer" >
           <div className=" rounded-md bg-white">
-            <Image src={sender != null ? sender.profilePic : ""} alt="profile" height={50} width={50} className="h-10 cursor-pointer rounded-full" />
+          {sender != null ? sender.profilePic !== "" ? <Image src={sender.profilePic} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" /> : <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer"><UserIcon className="h-6 w-6 text-blue-500" /></div> : null}
           </div>
           <div className="flex justify-between w-full">
               <div>   

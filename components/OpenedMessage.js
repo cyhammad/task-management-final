@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { PaperAirplaneIcon, PaperClipIcon } from "@heroicons/react/24/solid";
+import { PaperAirplaneIcon, PaperClipIcon, UserIcon } from "@heroicons/react/24/solid";
 import {
   addDoc,
   collection,
@@ -176,16 +176,10 @@ function OpenedMessage({ chatDetails }) {
         className="flex items-center shadow-b-md"
         style={{ boxShadow: "0px 3px 0px #f0f0f0" }}
       >
-        <Image
-          src={recipient.profilePic}
-          alt="profile"
-          height={50}
-          width={50}
-          className="h-10 cursor-pointer rounded-full"
-        />
+        {recipient.profilePic !== "" ? <Image src={recipient.profilePic} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" /> : <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer"><UserIcon className="h-6 w-6 text-blue-500" /></div>}
         <div className="ml-3">{recipient.name}</div>
       </div>
-      <div className="overflow-y-scroll scrollbar h-[45vh]" id="chatscroll">
+      <div className="overflow-y-auto scrollbar h-[50vh]" id="chatscroll">
         {chatList.map((msg) => {
           return (
             <>

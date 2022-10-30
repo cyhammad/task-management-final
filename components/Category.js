@@ -17,7 +17,7 @@ function Category({id, name, image}) {
     deleteObject(ref(storage, `categories/${id}/image`))
   }
   return (
-    <div>
+    <div className='lg:p-2'>
       <div className="bg-white px-4 py-2 flex space-x-3 rounded-lg min-w-[240px]">
         <Image className='rounded-lg' src={image} alt="IMG" width={50} height={50} />
         <div>

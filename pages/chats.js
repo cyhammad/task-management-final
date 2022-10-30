@@ -54,7 +54,7 @@ function Chats() {
                 <p className="text-xs">View all</p>
               </div>
               <StartChatModal openChat={openChat} />
-              <div className="rounded-lg overflow-hidden">
+              <div className="rounded-lg h-[60vh] overflow-y-auto scrollbar">
                 {chatList.map((chat)=>{
                   return <Chat chatDetails={chat.data()} key={chat.id} onClick={()=>openChat(chat.id)} />
                 })}

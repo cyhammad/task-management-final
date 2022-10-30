@@ -40,7 +40,7 @@ function Categories() {
             <h1 className="font-medium">Categories</h1>
             <AddCategoryModal />
           </div>
-          <div className="flex flex-col lg:flex-row lg:space-y-0 pt-8 space-y-4 lg:space-x-6 pb-10">
+          <div className="flex flex-col flex-wrap lg:flex-row lg:space-y-0 pt-4 space-y-4 lg:space-x-0 pb-10">
             {catList.map( catIns => (
                <Category key={catIns.id} id={catIns.id} name={catIns.data().name} image={catIns.data().image} />
             ))}
