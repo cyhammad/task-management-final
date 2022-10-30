@@ -57,7 +57,7 @@ const Login = () => {
           <div className="col-span-10 lg:col-span-5 flex flex-col items-center lg:px-10">
             <div className="relative w-36 h-24 mb-10 cursor-pointer mt-5">
               <Image
-                src="/LOGO.png"
+                src="https://firebasestorage.googleapis.com/v0/b/taskmanagement-a5d8a.appspot.com/o/LOGO.PNG?alt=media&token=4357c703-28fd-476b-b998-0525088436c0"
                 layout="fill"
                 alt="Profile"
                 objectFit="contain"
