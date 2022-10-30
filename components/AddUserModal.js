@@ -63,8 +63,6 @@ function AddUserModal() {
           );
         }
       });
-
-      router.push("/");
     } catch (error) {
       console.log(error);
     }
