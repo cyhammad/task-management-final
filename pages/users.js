@@ -73,7 +73,6 @@ function Users({ userList }) {
         <h1 className="text-3xl font-semibold mt-11">Users</h1>
         <SubNavBar selectedTab="users">
           <div className="flex gap-x-3 p-0 m-0">
-            <AddUserModal />
             <div
               className="text-white bg-[#004064] py-[6px] pl-2 pr-3 text-xs rounded flex items-center gap-x-1 cursor-pointer"
               onClick={() => handleAllSelected()}
