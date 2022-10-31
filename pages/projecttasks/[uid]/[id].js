@@ -32,12 +32,13 @@ function ProjectTask() {
   const [todoTaskCount, setTodoTaskCount] = useState(3);
   const [inProgressTaskCount, setInProgressTaskCount] = useState(3);
   const [completedTaskCount, setCompletedTaskCount] = useState(3);
-  useEffect(() => {
-    const docRef = doc(db, `users/${uid}/projects`, id);
-    const docSnap = getDoc(docRef).then((snapshot) => {
-      setTaskList(snapshot.data().tasks);
-    });
-  }, [id, uid, newTasks, todoTasks, inProgressTasks, completedTasks]);
+  useEffect(
+    () =>
+      onSnapshot(query(collection(db, `users/${uid}/projects/${id}/subtasks`)), (snapshot) => {
+        setTaskList(snapshot.docs);
+      }),
+    [id, uid, newTasks, todoTasks, inProgressTasks, completedTasks]
+  );
   useEffect(() => {
     var a = taskList.filter((item) => item.status == "new" || !item.status);
     setNewTasks(a);
@@ -100,22 +101,22 @@ function ProjectTask() {
         <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar pb-60">
           <Column name="New Projects" taskCount={newTasks.length} viewMore={()=>viewMore("new")} viewLess={()=>viewLess("new")} >
             {newTasks.slice(0, newTaskCount).map((task) => (
-              <ProjectTaskIns task={task} projectId={id} key={task.taskId} />
+              <ProjectTaskIns task={task.data()} projectId={id} key={task.data().taskId} />
             ))}
           </Column>
           <Column name="Todo" taskCount={todoTasks.length} viewMore={()=>viewMore("todo")} viewLess={()=>viewLess("todo")} >
             {todoTasks.slice(0, todoTaskCount).map((task) => (
-              <ProjectTaskIns task={task} projectId={id} key={task.taskId} />
+              <ProjectTaskIns task={task.data()} projectId={id} key={task.data().taskId} />
             ))}
           </Column>
           <Column name="In Progress" taskCount={inProgressTasks.length} viewMore={()=>viewMore("inProgress")} viewLess={()=>viewLess("inProgress")} >
             {inProgressTasks.slice(0, inProgressTaskCount).map((task) => (
-              <ProjectTaskIns task={task} projectId={id} key={task.taskId} />
+              <ProjectTaskIns task={task.data()} projectId={id} key={task.data().taskId} />
             ))}
           </Column>
           <Column name="Completed" taskCount={completedTasks.length} viewMore={()=>viewMore("completed")} viewLess={()=>viewLess("completed")} >
             {completedTasks.slice(0, completedTaskCount).map((task) => (
-              <ProjectTaskIns task={task} projectId={id} key={task.taskId} />
+              <ProjectTaskIns task={task.data()} projectId={id} key={task.data().taskId} />
             ))}
           </Column>
         </div>

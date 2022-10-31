@@ -5,7 +5,7 @@ import { EllipsisHorizontalIcon, UserIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import TaskOptions from "./TaskOptions";
 import { db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { toast } from "react-toastify";
@@ -13,6 +13,7 @@ import ProjectOptions from "./ProjectOptions";
 
 function Project(props) {
   const [userPic, setUserPic] = useState("");
+  const [taskNumber, setTaskNumber] = useState(0);
   const router = useRouter();
   useEffect(() => {
     if (props.userId != undefined) {
@@ -22,8 +23,15 @@ function Project(props) {
       });
     }
   }, [props.userId]);
+  useEffect(
+    () =>
+      onSnapshot(query(collection(db, `users/${props.userId}/projects/${props.projectId}/subtasks`)), (snapshot) => {
+        setTaskNumber(snapshot.docs.length);
+      }),
+    [db]
+  );
   const navigateTasks = () => {
-    if (props.taskNumber == 0) {
+    if (taskNumber == 0) {
       toast("No tasks in this project");
     } else {
       router.push(`/projecttasks/${props.userId}/${props.projectId}`);
@@ -75,7 +83,7 @@ function Project(props) {
           />
           <div
             className={
-              props.taskNumber == undefined && props.remainingTime == undefined
+              taskNumber == undefined && props.remainingTime == undefined
                 ? "hidden"
                 : "flex justify-between py-4"
             }
@@ -83,12 +91,12 @@ function Project(props) {
           >
             <span
               className={
-                props.taskNumber == undefined
+                taskNumber == undefined
                   ? "opacity-0"
                   : "rounded-md bg-gray-700 text-white px-3 text-xs py-[4px] cursor-pointer"
               }
             >
-              {props.taskNumber} task
+              {taskNumber} task
             </span>
             <span
               className={
@@ -105,7 +113,7 @@ function Project(props) {
         <ProjectOptions
           userId={props.userId}
           projectId={props.projectId}
-          taskNumber={props.taskNumber}
+          taskNumber={taskNumber}
         />
       </div>
     </div>

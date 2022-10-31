@@ -62,8 +62,8 @@ export default function TaskModal({ task, projectTask }) {
             )}
           </div>
           <h1>
-            {task.title.slice(0, 18)}
-            {task.title.length > 18 ? " . . ." : null}
+            {task.title.slice(0, 15)}
+            {task.title.length > 15 ? " . . ." : null}
           </h1>
         </div>
         <span

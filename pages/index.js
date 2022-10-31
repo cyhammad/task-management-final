@@ -104,7 +104,6 @@ export default function Home() {
                 <Project
                   name={task.data().title}
                   priority={task.data().priorityValue}
-                  taskNumber={task.data().tasks.length}
                   userId={task.data().userId}
                   desc={task.data().description}
                   projectId={task.data().projectId}
@@ -125,7 +124,6 @@ export default function Home() {
                 <Project
                   name={task.data().title}
                   priority={task.data().priorityValue}
-                  taskNumber={task.data().tasks.length}
                   userId={task.data().userId}
                   desc={task.data().description}
                   projectId={task.data().projectId}
@@ -145,7 +143,6 @@ export default function Home() {
                 <Project
                   name={task.data().title}
                   priority={task.data().priorityValue}
-                  taskNumber={task.data().tasks.length}
                   userId={task.data().userId}
                   desc={task.data().description}
                   projectId={task.data().projectId}
@@ -165,7 +162,6 @@ export default function Home() {
                 <Project
                   name={task.data().title}
                   priority={task.data().priorityValue}
-                  taskNumber={task.data().tasks.length}
                   userId={task.data().userId}
                   desc={task.data().description}
                   projectId={task.data().projectId}
