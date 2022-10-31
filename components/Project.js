@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CommentsModal from "./CommentsModal";
 
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import { EllipsisHorizontalIcon, UserIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import TaskOptions from "./TaskOptions";
 import { db } from "../firebase";
@@ -23,27 +23,35 @@ function Project(props) {
     }
   }, [props.userId]);
   const navigateTasks = () => {
-    if (props.taskNumber == 0){
-      toast("No tasks in this project")
+    if (props.taskNumber == 0) {
+      toast("No tasks in this project");
+    } else {
+      router.push(`/projecttasks/${props.userId}/${props.projectId}`);
     }
-    else{
-      router.push(`/projecttasks/${props.userId}/${props.projectId}`)
-    }
-  }
+  };
   return (
     <div>
       <div className="px-5 pt-5 pb-1 bg-white m-3 rounded-xl w-auto mb-3">
         <div className="cursor-pointer">
-          <div className="flex justify-between items-center pb-4 cursor-pointer" onClick={()=>navigateTasks()}>
+          <div
+            className="flex justify-between items-center pb-4 cursor-pointer"
+            onClick={() => navigateTasks()}
+          >
             <div className="flex space-x-2 items-center">
               <div className=" rounded-md bg-white">
-              <Image
-                src={userPic}
-                width={40}
-                height={40}
-                className="rounded-full"
-                alt="user"
-              />
+                {userPic !== "" ? (
+                  <Image
+                    src={userPic}
+                    alt="profile"
+                    height={40}
+                    width={40}
+                    className="h-10 cursor-pointer rounded-full"
+                  />
+                ) : (
+                  <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer">
+                    <UserIcon className="h-6 w-6 text-blue-500" />
+                  </div>
+                )}
               </div>
               <h1>{props.name}</h1>
             </div>
@@ -60,14 +68,18 @@ function Project(props) {
             </span>
           </div>
           <div className="text-gray-400 pb-4">{props.desc}</div>
-          <CommentsModal projectId={props.projectId} userId={props.userId} taskType={'project'} />
+          <CommentsModal
+            projectId={props.projectId}
+            userId={props.userId}
+            taskType={"project"}
+          />
           <div
             className={
               props.taskNumber == undefined && props.remainingTime == undefined
                 ? "hidden"
                 : "flex justify-between py-4"
             }
-            onClick={()=>navigateTasks()}
+            onClick={() => navigateTasks()}
           >
             <span
               className={
@@ -90,7 +102,11 @@ function Project(props) {
           </div>
         </div>
 
-        <ProjectOptions userId={props.userId} projectId={props.projectId} taskNumber={props.taskNumber} />
+        <ProjectOptions
+          userId={props.userId}
+          projectId={props.projectId}
+          taskNumber={props.taskNumber}
+        />
       </div>
     </div>
   );

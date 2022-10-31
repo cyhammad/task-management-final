@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PaperClipIcon } from "@heroicons/react/24/outline";
+import { PaperClipIcon, UserIcon } from "@heroicons/react/24/outline";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import TaskOptions from "./TaskOptions";
@@ -18,22 +18,27 @@ export default function TaskModal({ task, projectTask }) {
       });
     }
   }, [task]);
-  useEffect(()=>{
+  useEffect(() => {
     const date = new Date();
-    const dueDate = new Date(task.dueDateTime)
-    const diff = new Date(date.getTime() - dueDate.getTime())
-    setRemainingTime(diff.getUTCDay() +"D "+diff.getUTCHours()+"hr "+diff.getUTCMinutes()+"m");
-  },[task])
-  const handleMarkComplete = async() => {
+    const dueDate = new Date(task.dueDateTime);
+    const diff = new Date(date.getTime() - dueDate.getTime());
+    setRemainingTime(
+      diff.getUTCDay() +
+        "D " +
+        diff.getUTCHours() +
+        "hr " +
+        diff.getUTCMinutes() +
+        "m"
+    );
+  }, [task]);
+  const handleMarkComplete = async () => {
     const docRef = doc(db, `users/${task.userId}/tasks`, task.id);
     updateDoc(docRef, {
-      status: "completed"
-    }).then(
-      ()=>{
-        setShowModal(false)
-      }
-    )
-  }
+      status: "completed",
+    }).then(() => {
+      setShowModal(false);
+    });
+  };
   return (
     <>
       <div
@@ -42,41 +47,84 @@ export default function TaskModal({ task, projectTask }) {
       >
         <div className="flex space-x-2 items-center max-w-[80%]">
           <div className=" rounded-md bg-white">
-            <Image
-              src={userPic}
-              width={40}
-              height={40}
-              className="rounded-full"
-              alt="user"
-            />
+            {userPic !== "" ? (
+              <Image
+                src={userPic}
+                alt="profile"
+                height={40}
+                width={40}
+                className="h-10 cursor-pointer rounded-full"
+              />
+            ) : (
+              <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer">
+                <UserIcon className="h-6 w-6 text-blue-500" />
+              </div>
+            )}
           </div>
-          <h1>{task.title.slice(0,18)}{task.title.length > 18 ? " . . .": null}</h1>
+          <h1>
+            {task.title.slice(0, 18)}
+            {task.title.length > 18 ? " . . ." : null}
+          </h1>
         </div>
         <span
           className={
             task.priorityValue?.toLowerCase() == "high"
               ? "rounded-md text-white px-2 text-xs py-1 bg-[#FF3743]"
-              : task.priorityValue?.toLowerCase() == "mid" || task.priorityValue?.toLowerCase() == "normal"
+              : task.priorityValue?.toLowerCase() == "mid" ||
+                task.priorityValue?.toLowerCase() == "normal"
               ? "rounded-md text-white px-2 text-xs py-1 bg-[#00CC14]"
               : "rounded-md text-white px-2 text-xs py-1 bg-[#0093E5]"
           }
         >
-          {task.priorityValue == undefined || task.priorityValue.toLowerCase() == "normal" ? "Mid" : task.priorityValue}
+          {task.priorityValue == undefined ||
+          task.priorityValue.toLowerCase() == "normal"
+            ? "Mid"
+            : task.priorityValue}
         </span>
       </div>
-      <div className="text-gray-400 pb-4 cursor-pointer" onClick={() => setShowModal(true)}>
+      <div
+        className="text-gray-400 pb-4 cursor-pointer"
+        onClick={() => setShowModal(true)}
+      >
         {task.description.slice(0, 30)}
       </div>
-      <CommentsModal taskId={task.taskId} userId={task.userId} taskType={"quicktask"} />
-      <div className={task.status == undefined && task.dueDateTime == undefined ? "hidden": "flex justify-between pb-4"}>
-        <span className={task.status == undefined ? "opacity-0": "h-fit rounded-md bg-[#1D95E9] text-white px-2 py-[2px] text-xs flex items-center cursor-pointer"}>
+      <CommentsModal
+        taskId={task.taskId}
+        userId={task.userId}
+        taskType={"quicktask"}
+      />
+      <div
+        className={
+          task.status == undefined && task.dueDateTime == undefined
+            ? "hidden"
+            : "flex justify-between pb-4"
+        }
+      >
+        <span
+          className={
+            task.status == undefined
+              ? "opacity-0"
+              : "h-fit rounded-md bg-[#1D95E9] text-white px-2 py-[2px] text-xs flex items-center cursor-pointer"
+          }
+        >
           {task.status}
         </span>
-        <span className={task.dueDateTime == undefined ? "opacity-0": "rounded-sm bg-gray-200 text-gray-500 px-2 py-[2px] text-xs flex items-center h-fit ml-5 cursor-pointer"}>
+        <span
+          className={
+            task.dueDateTime == undefined
+              ? "opacity-0"
+              : "rounded-sm bg-gray-200 text-gray-500 px-2 py-[2px] text-xs flex items-center h-fit ml-5 cursor-pointer"
+          }
+        >
           Est. {remainingTime}
         </span>
       </div>
-      {projectTask ? null :<TaskOptions task={task.title == undefined ? task.data(): task} openModel={setShowModal} />}
+      {projectTask ? null : (
+        <TaskOptions
+          task={task.title == undefined ? task.data() : task}
+          openModel={setShowModal}
+        />
+      )}
       {showModal ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -123,9 +171,7 @@ export default function TaskModal({ task, projectTask }) {
                   <div>
                     <div className="pt-5">
                       <div className="mb-8">
-                        <h1 className="font-medium text-lg">
-                          {task.title}
-                        </h1>
+                        <h1 className="font-medium text-lg">{task.title}</h1>
                         <p className="text-sm text-gray-500 pt-1">
                           {task.description}
                         </p>
@@ -140,9 +186,17 @@ export default function TaskModal({ task, projectTask }) {
                       <div className="flex text-md font-normal items-center space-x-3 pt-5">
                         <span>{new Date(task.dueDateTime).getDate()}</span>
                         <span className="bg-[#004064] py-4 px-2 text-xs text-white rounded-lg">
-                        {new Date(task.dueDateTime).toLocaleDateString('en-us',{month: 'long'}).slice(0,3).toLowerCase()}
+                          {new Date(task.dueDateTime)
+                            .toLocaleDateString("en-us", { month: "long" })
+                            .slice(0, 3)
+                            .toLowerCase()}
                         </span>
-                        <span>{new Date(task.dueDateTime).getFullYear().toString().slice(2,4)}</span>
+                        <span>
+                          {new Date(task.dueDateTime)
+                            .getFullYear()
+                            .toString()
+                            .slice(2, 4)}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -151,7 +205,7 @@ export default function TaskModal({ task, projectTask }) {
                 <div className="flex justify-center space-x-5 mt-36 mb-10">
                   <button
                     className="bg-[#004064] rounded-md text-white w-48 py-3 text-xs"
-                    onClick={() =>handleMarkComplete()}
+                    onClick={() => handleMarkComplete()}
                   >
                     Mark Complete
                   </button>

@@ -11,6 +11,8 @@ function DeleteUserModal({ selectedUsers, multiple }) {
     await deleteDoc(
       doc(db, `users/${auth.currentUser.uid}/chats`, id + "-chat")
     );
+    // delete subcollections from firestore
+    
     window.location.reload(false);
   };
   const handleDelete = async () => {
