@@ -23,7 +23,7 @@ function Notifications() {
   useEffect(
     () =>
       onSnapshot(
-        query(collection(db, `users/${auth.currentUser.uid}/notifications`)),
+        query(collection(db, `users/${auth.currentUser.uid}/notifications`), orderBy("createdAt", "desc")),
         (snapshot) => {
           setNotifList(snapshot.docs);
           console.log(snapshot.d);

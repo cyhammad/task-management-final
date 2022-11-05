@@ -104,20 +104,6 @@ function OpenedMessage({ chatDetails }) {
         }
       );
     }
-    await addDoc(
-      collection(
-        db,
-        `users/${chatDetails.with}/chats/${auth.currentUser.uid}-chat/messages`
-      ),
-      {
-        message: msg,
-        image: imgLink,
-        from: auth.currentUser.uid,
-        to: chatDetails.with,
-        timeSent: serverTimestamp(),
-        isSeen: false,
-      }
-    );
     await setDoc(
       doc(
         db,
@@ -130,20 +116,6 @@ function OpenedMessage({ chatDetails }) {
         image: imgLink,
         timeSent: serverTimestamp(),
         with: chatDetails.with,
-      }
-    );
-    await setDoc(
-      doc(
-        db,
-        `users/${chatDetails.with}/chats`,
-        `${auth.currentUser.uid}-chat`
-      ),
-      {
-        isSeen: false,
-        recentMessage: msg,
-        image: imgLink,
-        timeSent: serverTimestamp(),
-        with: auth.currentUser.uid,
       }
     );
     await addDoc(collection(db, `users/${chatDetails.with}/notifications`), {

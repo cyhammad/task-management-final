@@ -10,7 +10,7 @@ function Notification({notif}) {
         ) : (
             <EnvelopeIcon className="h-5 w-5 mr-4" />
         )}
-        <div key={notif.id}>{notif.data().body}</div>
+        <div key={notif.id}><span className="font-medium">{notif.data().title}</span> <span className="text-gray-400 pl-3 text-sm">{notif.data().body}</span></div>
     </div>
   )
 }

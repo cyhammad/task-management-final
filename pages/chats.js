@@ -24,7 +24,7 @@ function Chats() {
   useEffect(
     () =>
       onSnapshot(
-        query(collection(db, `users/${auth.currentUser.uid}/chats`)),
+        query(collection(db, `users/${auth.currentUser.uid}/chats`), orderBy("timeSent", "desc")),
         (snapshot) => {
           setChatList(snapshot.docs);
         }
