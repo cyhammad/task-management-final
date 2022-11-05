@@ -4,7 +4,7 @@ import {
   ArrowUturnLeftIcon,
 } from "@heroicons/react/24/outline";
 import { HandThumbUpIcon } from "@heroicons/react/24/outline";
-import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, serverTimestamp, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import Image from "next/image";
 import Reply from "./Reply";
@@ -46,6 +46,9 @@ function Comment({ key, comment, taskId, commentId }) {
             likedBy: [],
         }   
     )
+    updateDoc(doc(db, `users/${comment.addedBy}/tasks/${taskId}/comments/${commentId}`), {
+      replies: replies.length + 1,
+    });
     console.log("Reply added with ", docRef.id)
   };
   const handleKeyDown = (event) => {
@@ -53,7 +56,24 @@ function Comment({ key, comment, taskId, commentId }) {
       addReply();
     }
   };
-  console.log("replies:", replies);
+  const substractDate = (date) => {
+    const today = new Date();
+    const commentDate = date.toDate();
+    const diff = today - commentDate;
+    const diffMins = Math.round(diff / 60000);
+    const diffHours = Math.floor(diff / 1000 / 60 / 60);
+    const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+    console.log("DAYS", diffDays);
+    if (diffDays > 0) {
+      return `${diffDays} days ago`;
+    } else if (diffHours > 0) {
+      return `${diffHours} hours ago`;
+    } else if (diffMins > 0) {
+      return `${diffMins} minutes ago`;
+    } else {
+      return "Just now";
+    }
+  }
   return (
     <>
       <div className="px-10 py-5 flex">
@@ -70,7 +90,7 @@ function Comment({ key, comment, taskId, commentId }) {
           <div className="flex items-center">
             <p className="font-medium">{user.name}</p>
             <p className="text-xs text-gray-400 leading-3 pl-5">
-              {comment.createdAt?.toDate().getUTCHours() + "h ago"}
+              {comment.createdAt? substractDate(comment.createdAt): ""}
             </p>
           </div>
           <div>

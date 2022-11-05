@@ -23,21 +23,26 @@ export default function TaskModal({ task, projectTask }) {
   useEffect(() => {
     const date = new Date();
     const dueDate = new Date(task.dueDateTime);
-    const diff = new Date(date.getTime() - dueDate.getTime());
-    setRemainingTime(
-      diff.getUTCDay() +
-        "D " +
-        diff.getUTCHours() +
-        "hr " +
-        diff.getUTCMinutes() +
-        "m"
-    );
+    const diff = dueDate - date;
+    const diffMins = Math.round(diff / 60000);
+    const diffHours = Math.round(diff / 3600000);
+    const diffDays = Math.round(diff / 86400000);
+    if (diffMins < 0) {
+      setRemainingTime("Overdue");
+    } else if (diffMins < 60) {
+      setRemainingTime(`Est. ${diffMins} mins`);
+    } else if (diffHours < 24) {
+      setRemainingTime(`Est. ${diffHours} hrs`);
+    } else {
+      setRemainingTime(`Est. ${diffDays} days`);
+    }
   }, [task]);
   const handleMarkComplete = async () => {
     console.log("dasdas:", task.taskId);
     const docRef = doc(db, `users/${task.userId}/tasks`, task.taskId);
     updateDoc(docRef, {
       status: "completed",
+      isPending: false,
     }).then(() => {
       setShowModal(false);
     });
@@ -119,7 +124,7 @@ export default function TaskModal({ task, projectTask }) {
               : "rounded-sm bg-gray-200 text-gray-500 px-2 py-[2px] text-xs flex items-center h-fit ml-5 cursor-pointer"
           }
         >
-          Est. {remainingTime}
+          {remainingTime}
         </span>
       </div>
       {projectTask ? null : (

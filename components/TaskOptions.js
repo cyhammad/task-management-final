@@ -13,6 +13,7 @@ function TaskOptions({ task, openModel }) {
     const docRef = doc(db, `users/${task.userId}/tasks`, task.taskId);
     updateDoc(docRef, {
       status: status,
+      isPending: status == "completed" ? false : true,
     }).then(() => {
       setShowOptions(false);
       setShowUpdateOptions(false);
@@ -96,6 +97,15 @@ function TaskOptions({ task, openModel }) {
         </div>
         <button className="border-t border-white py-1 text-sm">
           Attachments
+        </button>
+        <button className="border-t border-white py-1 text-sm">
+          Chat
+        </button>
+        <button className="border-t border-white py-1 text-sm">
+          Comments
+        </button>
+        <button className="border-t border-white py-1 text-sm">
+          Delete
         </button>
       </div>
     </div>

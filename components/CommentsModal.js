@@ -27,12 +27,22 @@ function CommentsModal({ userId, projectId, taskId, taskType }) {
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [comments, setComments] = useState([]);
+  const [commentCount, setCommentCount] = useState(0);
   const [inpComment, setInpComment] = useState("");
   const useEffectQuery = taskType == 'quicktask' ? `users/${userId}/tasks/${taskId}/comments` : `users/${userId}/projects/${projectId}/comments`;
-  console.log(useEffectQuery);  
+  console.log(useEffectQuery); 
   useEffect(() => onSnapshot(
     query(collection(db, useEffectQuery), orderBy("createdAt")),
-    (snapshot) => setComments(snapshot.docs)
+    (snapshot) => {
+      setComments(snapshot.docs)
+      var replies = 0;
+      var comments = 0;
+      snapshot.docs.forEach((docIns)=>{
+        docIns.data().replies ? replies = docIns.data().replies : null;
+        comments = comments + 1;
+      })
+      setCommentCount(replies + comments);
+    }
   ), [db]);
   const addComment = async () => {
     const inpcom = inpComment;
@@ -46,6 +56,7 @@ function CommentsModal({ userId, projectId, taskId, taskType }) {
             comment: inpcom,
             createdAt: serverTimestamp(),
             likedBy: [],
+            replies: 0,
         }   
     )
     console.log("Comment added with ", docRef.id)
@@ -75,7 +86,7 @@ function CommentsModal({ userId, projectId, taskId, taskType }) {
           />
         </div>
         <p className="text-xs flex items-center text-gray-400 my-2">
-          {comments.length} comments
+          {commentCount} comments
           <ChatBubbleOvalLeftEllipsisIcon className="h-3 w-3 ml-1" />
         </p>
       </div>
