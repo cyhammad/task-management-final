@@ -92,7 +92,7 @@ export default function Home() {
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 lg:min-h-screen">
         <h1 className="text-3xl font-semibold mt-11">Projects</h1>
         <SubNavBar selectedTab="projects" />
-        <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar">
+        <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar pb-60">
           <Column
             name="New Projects"
             taskCount={newTasks.length}

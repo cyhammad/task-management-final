@@ -14,7 +14,9 @@ export default function TaskModal({ task, projectTask }) {
     if (task.userId != undefined) {
       const docRef = doc(db, "users", task.userId);
       getDoc(docRef).then((docSnap) => {
-        setUserPic(docSnap.data().profilePic);
+        console.log(docSnap.data());
+        docSnap.data()?.profilePic != undefined &&
+          setUserPic(docSnap.data().profilePic);
       });
     }
   }, [task]);
@@ -32,7 +34,8 @@ export default function TaskModal({ task, projectTask }) {
     );
   }, [task]);
   const handleMarkComplete = async () => {
-    const docRef = doc(db, `users/${task.userId}/tasks`, task.id);
+    console.log("dasdas:", task.taskId);
+    const docRef = doc(db, `users/${task.userId}/tasks`, task.taskId);
     updateDoc(docRef, {
       status: "completed",
     }).then(() => {
@@ -161,12 +164,19 @@ export default function TaskModal({ task, projectTask }) {
                 {/*body*/}
                 <div className="flex">
                   <div className="rounded-md ml-12 mr-5 pt-5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={userPic}
-                      alt="profile"
-                      className="h-10 cursor-pointer rounded-full"
-                    />
+                    {userPic !== "" ? (
+                      <Image
+                        src={userPic}
+                        alt="profile"
+                        height={40}
+                        width={40}
+                        className="h-10 cursor-pointer rounded-full"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer">
+                        <UserIcon className="h-6 w-6 text-blue-500" />
+                      </div>
+                    )}
                   </div>
                   <div>
                     <div className="pt-5">

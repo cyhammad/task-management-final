@@ -2,19 +2,31 @@ import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
+import Notification from "../components/Notification";
 import { auth, db } from "../firebase";
+import { Pagination } from "../utility/Pagination";
 
 function Notifications() {
   const [notifList, setNotifList] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const perPage = 6;
+
+  const indexOfLastData = currentPage * perPage;
+  const indexOfFirstData = indexOfLastData - perPage;
+  const currentData = notifList.slice(indexOfFirstData, indexOfLastData);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   useEffect(
     () =>
       onSnapshot(
-        query(
-          collection(db, `users/${auth.currentUser.uid}/notifications`)
-        ),
+        query(collection(db, `users/${auth.currentUser.uid}/notifications`)),
         (snapshot) => {
           setNotifList(snapshot.docs);
-          console.log(snapshot.d)
+          console.log(snapshot.d);
         }
       ),
     [db]
@@ -29,18 +41,26 @@ function Notifications() {
       </Head>
 
       {/* Header */}
-      <Header selectedTab="work" />
+      <Header selectedTab="settings" />
 
-      <div className="px-4 sm:px-6 md:px-8 lg:px-10 min-h-[75vh] lg:min-h-[85vh] pb-20">
-        <h1 className="text-3xl font-semibold mt-11">Notifications</h1>
-        <div className="bg-[#F4F5F8] mt-5 pt-6 px-4 rounded-xl min-h-[60vh] lg:min-h-[65vh]">
-          {notifList.length != 0 ? notifList.map((notif) => (
-            <div key={notif.id}>{notif.data().title}</div>
-          )):
-          (
-            <p>No Notifications</p>
-          )
-          }
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 min-h-[75vh] lg:min-h-[75vh] pb-20">
+        <h1 className="text-3xl font-semibold mt-11 border-b-2 pb-5">
+          Notifications
+        </h1>
+        {currentData.length != 0 ? (
+          currentData.map((notif) => (
+            <Notification notif={notif} key={notif.key} />
+          ))
+        ) : (
+          <p>No Notifications</p>
+        )}
+        <div className="px-16 py-8">
+          <Pagination
+            perPage={perPage}
+            totalData={notifList.length}
+            paginate={paginate}
+            currentPage={currentPage}
+          />
         </div>
       </div>
     </div>

@@ -31,7 +31,6 @@ function Chats() {
       ),
     []
   );
-  console.log("ChatList: ", chatList)
   return (
       <div className="bg-default">
         <Head>

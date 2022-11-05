@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { PaperAirplaneIcon, PaperClipIcon, UserIcon } from "@heroicons/react/24/solid";
+import {
+  PaperAirplaneIcon,
+  PaperClipIcon,
+  UserIcon,
+} from "@heroicons/react/24/solid";
 import {
   addDoc,
   collection,
@@ -45,6 +49,18 @@ function OpenedMessage({ chatDetails }) {
         ),
         (snapshot) => {
           setChatList(snapshot.docs);
+          snapshot.docs.forEach((docIns) => {
+            updateDoc(
+              doc(
+                db,
+                `users/${auth.currentUser.uid}/chats/${chatDetails.with}-chat/messages/`,
+                docIns.id
+              ),
+              {
+                isSeen: true,
+              }
+            );
+          });
         }
       ),
     [chatDetails]
@@ -130,18 +146,13 @@ function OpenedMessage({ chatDetails }) {
         with: auth.currentUser.uid,
       }
     );
-    await addDoc(
-      collection(
-        db,
-        `users/${chatDetails.with}/notifications`,
-      ),{
-        isSeen: false,
-        title: `New Message from ${auth.currentUser.displayName}`,
-        body: msg,
-        sentBy: auth.currentUser.uid,
-        createdAt: serverTimestamp(),
-      }
-    )
+    await addDoc(collection(db, `users/${chatDetails.with}/notifications`), {
+      isSeen: false,
+      title: `New Message from ${auth.currentUser.displayName}`,
+      body: msg,
+      sentBy: auth.currentUser.uid,
+      createdAt: serverTimestamp(),
+    });
   };
   const addFileToMsg = (e) => {
     const reader = new FileReader();
@@ -176,7 +187,19 @@ function OpenedMessage({ chatDetails }) {
         className="flex items-center shadow-b-md"
         style={{ boxShadow: "0px 3px 0px #f0f0f0" }}
       >
-        {recipient.profilePic !== "" ? <Image src={recipient.profilePic} alt="profile" height={40} width={40} className="h-10 cursor-pointer rounded-full" /> : <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer"><UserIcon className="h-6 w-6 text-blue-500" /></div>}
+        {recipient.profilePic !== "" ? (
+          <Image
+            src={recipient.profilePic}
+            alt="profile"
+            height={40}
+            width={40}
+            className="h-10 cursor-pointer rounded-full"
+          />
+        ) : (
+          <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer">
+            <UserIcon className="h-6 w-6 text-blue-500" />
+          </div>
+        )}
         <div className="ml-3">{recipient.name}</div>
       </div>
       <div className="overflow-y-auto scrollbar h-[50vh]" id="chatscroll">
@@ -189,13 +212,35 @@ function OpenedMessage({ chatDetails }) {
                 }`}
               >
                 <div className="relative cursor-pointer">
-                  <Image
-                    src={msg.data().from == chatDetails.with ? recipient.profilePic : user.photoURL}
-                    alt="profile"
-                    height={50}
-                    width={50}
-                    className="h-10 cursor-pointer rounded-full"
-                  />
+                  {msg.data().from == chatDetails.with ? (
+                    recipient.profilePic !== "" ? (
+                      <Image
+                        src={recipient.profilePic}
+                        alt="profile"
+                        height={40}
+                        width={40}
+                        className="h-10 cursor-pointer rounded-full"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer">
+                        <UserIcon className="h-6 w-6 text-blue-500" />
+                      </div>
+                    )
+                  ) : (
+                    auth.currentUser.photoURL !== "" ? (
+                      <Image
+                        src={auth.currentUser.photoURL}
+                        alt="profile"
+                        height={40}
+                        width={40}
+                        className="h-10 cursor-pointer rounded-full"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer">
+                        <UserIcon className="h-6 w-6 text-blue-500" />
+                      </div>
+                    )
+                  )}
                 </div>
                 <div
                   className={`h-fit flex flex-col mx-3 py-1 px-2 shadow-md min-w-[50px] max-w-md rounded-lg ${

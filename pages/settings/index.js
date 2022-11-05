@@ -10,6 +10,7 @@ import { PencilIcon } from "@heroicons/react/24/solid";
 import ChangePasswordModal from "../../components/ChangePasswordModal";
 import ChangeEmailModal from "../../components/ChangeEmailModal";
 import ChangeProfileImageModal from "../../components/ChangeProfileImageModal";
+import Link from "next/link";
 
 function Settings() {
     const [passModal, setPassModal] = useState(false);
@@ -39,10 +40,12 @@ function Settings() {
           <p className="font-medium text-lg mt-5 pb-4">General</p>
         </div>
         <div className="px-6 text-gray-500">
-          <div className="flex justify-between py-6 border-b border-gray-200 hover:text-black cursor-pointer">
-            <p>Notfication</p>
-            <BellAlertIcon className="h-6 w-6" />
-          </div>
+          <Link href="/notifications">
+            <div className="flex justify-between py-6 border-b border-gray-200 hover:text-black cursor-pointer">
+              <p>Notfication</p>
+              <BellAlertIcon className="h-6 w-6" />
+            </div>
+          </Link>
           <ChangeProfileImageModal />
         </div>
       </div>
