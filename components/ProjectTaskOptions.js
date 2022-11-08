@@ -2,6 +2,7 @@ import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import DeleteProjectTaskButton from "./DeleteProjectTaskButton";
 
 function ProjectTaskOptions({task, projectId}) {
   const [showOptions, setShowOptions] = useState(false);
@@ -99,6 +100,7 @@ function ProjectTaskOptions({task, projectId}) {
         <button className="border-t border-white py-1 text-sm">
           Attachments
         </button>
+        <DeleteProjectTaskButton projectId={projectId} task={task} />
       </div>
     </div>
   );

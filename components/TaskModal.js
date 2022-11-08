@@ -5,16 +5,24 @@ import { db } from "../firebase";
 import TaskOptions from "./TaskOptions";
 import CommentsModal from "./CommentsModal";
 import Image from "next/image";
+import {
+  ArrowLeftIcon,
+  ArrowLongLeftIcon,
+  DocumentTextIcon,
+} from "@heroicons/react/24/solid";
+import Attachment from "./Attachment";
+import ProjectTaskOptions from "./ProjectTaskOptions";
 
-export default function TaskModal({ task, projectTask }) {
+export default function TaskModal({ task, projectTask, projectId }) {
   const [showModal, setShowModal] = useState(false);
+  const [viewAttachment, setViewAttachment] = useState(false);
   const [userPic, setUserPic] = useState("");
   const [remainingTime, setRemainingTime] = useState(null);
+  console.log(task);
   useEffect(() => {
     if (task.userId != undefined) {
       const docRef = doc(db, "users", task.userId);
       getDoc(docRef).then((docSnap) => {
-        console.log(docSnap.data());
         docSnap.data()?.profilePic != undefined &&
           setUserPic(docSnap.data().profilePic);
       });
@@ -47,6 +55,7 @@ export default function TaskModal({ task, projectTask }) {
       setShowModal(false);
     });
   };
+  console.log("TASKS, ", task);
   return (
     <>
       <div
@@ -100,6 +109,7 @@ export default function TaskModal({ task, projectTask }) {
         taskId={task.taskId}
         userId={task.userId}
         taskType={"quicktask"}
+        access={"modal"}
       />
       <div
         className={
@@ -127,10 +137,21 @@ export default function TaskModal({ task, projectTask }) {
           {remainingTime}
         </span>
       </div>
-      {projectTask ? null : (
+      {projectTask ? (
+        <ProjectTaskOptions
+          task={task}
+          openModel={setShowModal}
+          openAttachment={setViewAttachment}
+          projectId={projectId}
+        />
+      ) : (
         <TaskOptions
           task={task.title == undefined ? task.data() : task}
           openModel={setShowModal}
+          openAttachment={setViewAttachment}
+          right={
+            task.status == undefined || task.status == "new" ? false : true
+          }
         />
       )}
       {showModal ? (
@@ -153,7 +174,13 @@ export default function TaskModal({ task, projectTask }) {
                       >
                         Est. {remainingTime}
                       </span>
-                      <span className="rounded-sm bg-gray-100 text-gray-500 px-3 text-xs py-[3px] cursor-pointer">
+                      <span
+                        className="rounded-sm bg-gray-100 text-gray-500 px-3 text-xs py-[3px] cursor-pointer"
+                        onClick={() => {
+                          setShowModal(false);
+                          setViewAttachment(true);
+                        }}
+                      >
                         View Attachments
                       </span>
                       <PaperClipIcon className="h-5 w-5 text-gray-500" />
@@ -214,6 +241,21 @@ export default function TaskModal({ task, projectTask }) {
                         </span>
                       </div>
                     </div>
+                    <div className="flex text-xs mt-4 space-x-3">
+                      <CommentsModal
+                        taskId={task.taskId}
+                        userId={task.userId}
+                        taskType={"quicktask"}
+                        access={"addbutton"}
+                        onClick={() => setShowModal(false)}
+                      />
+                      <CommentsModal
+                        taskId={task.taskId}
+                        userId={task.userId}
+                        taskType={"quicktask"}
+                        access={"viewbutton"}
+                      />
+                    </div>
                   </div>
                 </div>
                 {/*footer*/}
@@ -229,6 +271,64 @@ export default function TaskModal({ task, projectTask }) {
                     onClick={() => setShowModal(false)}
                   >
                     Send Files
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+        </>
+      ) : null}
+      {viewAttachment ? (
+        <>
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+            <div className="relative w-auto min-w-[70vw] my-6 mx-auto max-w-4xl">
+              {/*content*/}
+              <div className="border-0 rounded-xl shadow-lg relative flex flex-col  bg-white outline-none focus:outline-none">
+                {/*header*/}
+                <div className="flex justify-between border-b border-solid">
+                  <div className="flex items-center py-6 pl-10 border-b border-solid border-slate-200 rounded-t grow">
+                    <ArrowLeftIcon
+                      className="h-5 w-5 mr-5 pt-1"
+                      onClick={() => {
+                        setViewAttachment(false);
+                        setShowModal(true);
+                      }}
+                    />
+                    <h3 className="text-xl font-semibold pt-1">Attachments</h3>
+                  </div>
+                  <button
+                    className="w-4 h-4 bg-slate-700 flex justify-center items-center text-white rounded-full text-[9px] m-2"
+                    onClick={() => setViewAttachment(false)}
+                  >
+                    x
+                  </button>
+                </div>
+                {/*body*/}
+                <div className="flex flex-wrap px-10 mt-5 min-h-[300px] items-start max-h-[300px] overflow-auto scrollbar">
+                  {task.files.length !== 0 ? (
+                    task.files.map((attachment) => (
+                      <>
+                        <Attachment
+                          attachment={attachment}
+                          key={attachment.fileUrl}
+                        />
+                      </>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 h-52">No attachments</p>
+                  )}
+                </div>
+                {/*footer*/}
+                <div className="flex justify-center space-x-5 mt-10 mb-10">
+                  <button
+                    className="rounded-md border-2 border-slate-500 text-slate-800 w-48 py-3 text-xs"
+                    onClick={() => {
+                      setShowModal(true);
+                      setViewAttachment(false);
+                    }}
+                  >
+                    Back to Project
                   </button>
                 </div>
               </div>

@@ -23,14 +23,13 @@ import Comment from "./Comment";
 import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
 
-function CommentsModal({ userId, projectId, taskId, taskType }) {
+function CommentsModal({ userId, projectId, taskId, taskType, access }) {
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [comments, setComments] = useState([]);
   const [commentCount, setCommentCount] = useState(0);
   const [inpComment, setInpComment] = useState("");
   const useEffectQuery = taskType == 'quicktask' ? `users/${userId}/tasks/${taskId}/comments` : `users/${userId}/projects/${projectId}/comments`;
-  console.log(useEffectQuery); 
   useEffect(() => onSnapshot(
     query(collection(db, useEffectQuery), orderBy("createdAt")),
     (snapshot) => {
@@ -67,10 +66,22 @@ function CommentsModal({ userId, projectId, taskId, taskType }) {
     }
   };
   return (
-    <div className={comments.length == 0 ? "hidden": ""}>
-      <div
+    <div>
+      {access == "options" && (
+        <button className="border-t border-white py-1 text-sm w-full" onClick={() => setShowModal(true)}>
+          Comments
+        </button>
+      )}
+      {access == "addbutton" && (
+        <button className="bg-[#004064] text-white px-2 py-1 rounded" onClick={() => setShowModal(true)} >Add Comment</button>
+      )}
+      {access == "viewbutton" && (
+        <button className="bg-[#D9D9D9] px-2 py-1 rounded" onClick={() => setShowModal(true)} >View Comments</button>
+      )}
+      {access == "modal" && (
+        <div
         className={
-          comments.length == undefined
+          comments.length == undefined || comments.length == 0
             ? "hidden"
             : "flex space-x-2 items-center cursor-pointer"
         }
@@ -90,6 +101,7 @@ function CommentsModal({ userId, projectId, taskId, taskType }) {
           <ChatBubbleOvalLeftEllipsisIcon className="h-3 w-3 ml-1" />
         </p>
       </div>
+      )}
       {showModal ? (
         <>
           <div className="justify-center items-center flex fixed inset-0 z-50 outline-none focus:outline-none">
@@ -108,7 +120,7 @@ function CommentsModal({ userId, projectId, taskId, taskType }) {
                         className="h-10 cursor-pointer rounded-full"
                       />
                     </div>
-                    <div className="px-5 py-4 grow border border-blue-200 rounded-md flex mx-2 bg-white">
+                    <div className="px-5 py-4 grow border border-blue-200 rounded-md flex mx-2 bg-white text-black">
                       <input
                         type="text"
                         className="bg-inherit w-full focus:outline-none"
@@ -131,7 +143,7 @@ function CommentsModal({ userId, projectId, taskId, taskType }) {
                   </button>
                 </div>
                 {/*body*/}
-                <div className="overflow-auto scrollbar max-h-[60vh]">
+                <div className="overflow-auto scrollbar max-h-[60vh] min-h-[450px]">
                   {comments.map((comment) => (
                     <Comment comment={comment.data()} key={comment.id} taskId={taskId} commentId={comment.id} />
                   ))}

@@ -109,6 +109,8 @@ export default function Home() {
                   projectId={task.data().projectId}
                   key={task.data().id}
                   comments={task.data().comments}
+                  status={task.data().status}
+                  files={task.data().files}
                 />
               </>
             ))}
@@ -128,6 +130,9 @@ export default function Home() {
                   desc={task.data().description}
                   projectId={task.data().projectId}
                   key={task.data().id}
+                  comments={task.data().comments}
+                  status={task.data().status}
+                  files={task.data().files}
                 />
               </>
             ))}
@@ -147,6 +152,9 @@ export default function Home() {
                   desc={task.data().description}
                   projectId={task.data().projectId}
                   key={task.data().id}
+                  comments={task.data().comments}
+                  status={task.data().status}
+                  files={task.data().files}
                 />
               </>
             ))}
@@ -166,6 +174,9 @@ export default function Home() {
                   desc={task.data().description}
                   projectId={task.data().projectId}
                   key={task.data().id}
+                  comments={task.data().comments}
+                  status={task.data().status}
+                  files={task.data().files}
                 />
               </>
             ))}

@@ -5,8 +5,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import CommentsModal from "./CommentsModal";
+import DeleteTaskButton from "./DeleteTaskButton";
 
-function TaskOptions({ task, openModel }) {
+function TaskOptions({ task, openModel, openAttachment, right }) {
   const [showOptions, setShowOptions] = useState(false);
   const [showUpdateOptions, setShowUpdateOptions] = useState(false);
   const updateStatus = async (status) => {
@@ -20,19 +22,18 @@ function TaskOptions({ task, openModel }) {
     });
   };
   return (
-    <div
-      className="flex flex-col items-end justify-end cursor-pointer relative"
-      onClick={() => setShowOptions(!showOptions)}
-    >
-      <EllipsisHorizontalIcon className="h-8 w-8" />
-      <div
-        className={`absolute flex flex-col w-[155px] top-5 rounded bg-[#282828] ${
-          showOptions ? null : "hidden"
-        } text-white w-fit`}
-        onMouseLeave={() => {
-          setShowOptions(false);
+    <div className="flex flex-col items-end justify-end cursor-pointer relative">
+      <EllipsisHorizontalIcon
+        className="h-8 w-8"
+        onClick={() => {
+          setShowOptions(!showOptions);
           setShowUpdateOptions(false);
         }}
+      />
+      <div
+        className={`absolute flex flex-col w-[158px] top-5 rounded bg-[#282828] ${
+          showOptions ? null : "hidden"
+        } text-white w-fit`}
       >
         <button className="px-8 py-1 text-sm" onClick={() => openModel(true)}>
           View details
@@ -44,9 +45,9 @@ function TaskOptions({ task, openModel }) {
           Update Status
         </button>
         <div
-          className={`bg-[#282828] absolute left-[150px] top-[28px] w-[220px] ${
-            showUpdateOptions ? null : "hidden"
-          }`}
+          className={`bg-[#282828] absolute ${
+            right ? "left-[-220px]" : "left-[150px]"
+          } z-10 top-[28px] w-[220px] ${showUpdateOptions ? null : "hidden"}`}
           onMouseLeave={() => setShowUpdateOptions(false)}
         >
           <button
@@ -95,18 +96,23 @@ function TaskOptions({ task, openModel }) {
             Archive After 30 days
           </button>
         </div>
-        <button className="border-t border-white py-1 text-sm">
+        <button
+          className="border-t border-white py-1 text-sm"
+          onClick={() => {
+            openAttachment(true);
+            setShowOptions(false);
+          }}
+        >
           Attachments
         </button>
-        <button className="border-t border-white py-1 text-sm">
-          Chat
-        </button>
-        <button className="border-t border-white py-1 text-sm">
-          Comments
-        </button>
-        <button className="border-t border-white py-1 text-sm">
-          Delete
-        </button>
+        <CommentsModal
+          taskId={task.taskId}
+          userId={task.userId}
+          taskType={"quicktask"}
+          access={"options"}
+        />
+        <button className="border-t border-white py-1 text-sm">Chat</button>
+        <DeleteTaskButton task={task} />
       </div>
     </div>
   );

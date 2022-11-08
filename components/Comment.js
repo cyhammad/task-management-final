@@ -76,7 +76,7 @@ function Comment({ key, comment, taskId, commentId }) {
   }
   return (
     <>
-      <div className="px-10 py-5 flex">
+      <div className="px-10 py-5 flex text-black">
         <div className="h-10">
           <Image
             src={user.profilePic}

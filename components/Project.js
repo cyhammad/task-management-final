@@ -80,6 +80,7 @@ function Project(props) {
             projectId={props.projectId}
             userId={props.userId}
             taskType={"project"}
+            access={"modal"}
           />
           <div
             className={
@@ -114,6 +115,8 @@ function Project(props) {
           userId={props.userId}
           projectId={props.projectId}
           taskNumber={taskNumber}
+          files={props.files}
+          right={props.status == undefined || props.status == 'new' ? false : true}
         />
       </div>
     </div>
