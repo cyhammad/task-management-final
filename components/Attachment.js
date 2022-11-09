@@ -5,7 +5,7 @@ function Attachment({attachment}) {
     const [options, setOptions] = useState(false);
   return (
     <div
-      className="flex flex-col items-center justify-center space-y-5 mr-4 max-w-[20%]"
+      className="flex flex-col items-center justify-center mb-3 mr-4 max-w-[20%]"
       key={attachment.fileName}
     >
       <div className="flex items-center justify-center space-x-2 bg-[#F4F5F8] p-3">
@@ -13,7 +13,7 @@ function Attachment({attachment}) {
           <DocumentTextIcon className="h-6 w-6 text-red-500" />
         </div>
         <div className="flex flex-col">
-          <p className="text-sm font-medium">{attachment.fileName.slice(0,12)}{attachment.fileName.length > 12 ? "...": null}</p>
+          <p className="text-sm font-medium">{attachment.fileName.slice(0,10)}{attachment.fileName.length > 10 ? "...": null}</p>
           <p className="text-xs text-gray-500">{attachment.size}</p>
         </div>
         <EllipsisHorizontalIcon className="h-5 w-5" onClick={()=>setOptions(!options)} />

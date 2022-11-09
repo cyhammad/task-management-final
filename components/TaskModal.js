@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { PaperClipIcon, UserIcon } from "@heroicons/react/24/outline";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import React, { useEffect, useState, useRef } from "react";
+import { PaperClipIcon, PlusIcon, UserIcon } from "@heroicons/react/24/outline";
+import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
+import { db, storage } from "../firebase";
 import TaskOptions from "./TaskOptions";
 import CommentsModal from "./CommentsModal";
 import Image from "next/image";
@@ -12,13 +12,19 @@ import {
 } from "@heroicons/react/24/solid";
 import Attachment from "./Attachment";
 import ProjectTaskOptions from "./ProjectTaskOptions";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 
 export default function TaskModal({ task, projectTask, projectId }) {
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [sendFileModal, setSendFileModal] = useState(false);
   const [viewAttachment, setViewAttachment] = useState(false);
   const [userPic, setUserPic] = useState("");
   const [remainingTime, setRemainingTime] = useState(null);
-  console.log(task);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [filename, setFilename] = useState("");
+  const filePickerRef = useRef(null);
+
   useEffect(() => {
     if (task.userId != undefined) {
       const docRef = doc(db, "users", task.userId);
@@ -46,7 +52,6 @@ export default function TaskModal({ task, projectTask, projectId }) {
     }
   }, [task]);
   const handleMarkComplete = async () => {
-    console.log("dasdas:", task.taskId);
     const docRef = doc(db, `users/${task.userId}/tasks`, task.taskId);
     updateDoc(docRef, {
       status: "completed",
@@ -55,7 +60,53 @@ export default function TaskModal({ task, projectTask, projectId }) {
       setShowModal(false);
     });
   };
-  console.log("TASKS, ", task);
+  const addFileToAttach = async(e) => {
+    const reader = new FileReader();
+    if (e.target.files[0]) {
+      reader.readAsDataURL(e.target.files[0]);
+    }
+    reader.onload = (readerEvent) => {
+      setSelectedFile(readerEvent.target.result);
+      setFilename(e.target.files[0].name)
+    };
+  }
+  const sendFile = async() => {
+    console.log("SELECTED FILE",selectedFile)
+    setLoading(true);
+    const fileRef = ref(storage, `tasks/${task.taskId}/${filename}`);
+    console.log("Sending attachment.", fileRef, selectedFile);
+    await uploadString(fileRef, selectedFile, "data_url").then(
+      async (snapshot) => {
+        const downloadURL = await getDownloadURL(fileRef);
+        if (projectTask){
+          await updateDoc(
+            doc(
+              db,
+              `users/${task.userId}/projects/${projectId}/subtasks`,
+              task.taskId
+            ),
+            {
+              files: arrayUnion({fileUrl: downloadURL, fileName: filename}),
+            }
+          );
+        }else{
+          await updateDoc(
+            doc(
+              db,
+              `users/${task.userId}/tasks`,
+              task.taskId
+            ),
+            {
+              files: arrayUnion({fileUrl: downloadURL, fileName: filename}),
+            }
+          );
+        }
+      }
+    );
+    setSelectedFile(null);
+    setLoading(false);
+    setSendFileModal(false);
+  }
   return (
     <>
       <div
@@ -268,10 +319,11 @@ export default function TaskModal({ task, projectTask, projectId }) {
                   </button>
                   <button
                     className="rounded-md border-2 border-slate-500 text-slate-800 w-48 py-3 text-xs"
-                    onClick={() => setShowModal(false)}
+                    onClick={() => setSendFileModal(true)}
                   >
                     Send Files
                   </button>
+                  <input ref={filePickerRef} onChange={addFileToAttach} type="file" hidden />
                 </div>
               </div>
             </div>
@@ -305,19 +357,21 @@ export default function TaskModal({ task, projectTask, projectId }) {
                   </button>
                 </div>
                 {/*body*/}
-                <div className="flex flex-wrap px-10 mt-5 min-h-[300px] items-start max-h-[300px] overflow-auto scrollbar">
-                  {task.files.length !== 0 ? (
-                    task.files.map((attachment) => (
-                      <>
-                        <Attachment
-                          attachment={attachment}
-                          key={attachment.fileUrl}
-                        />
-                      </>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 h-52">No attachments</p>
-                  )}
+                <div className="min-h-[350px]">
+                  <div className="flex flex-wrap px-10 mt-5 items-start max-h-[300px] overflow-auto scrollbar">
+                    {task.files.length !== 0 ? (
+                      task.files.map((attachment) => (
+                        <>
+                          <Attachment
+                            attachment={attachment}
+                            key={attachment.fileUrl}
+                          />
+                        </>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 h-52">No attachments</p>
+                    )}
+                  </div>
                 </div>
                 {/*footer*/}
                 <div className="flex justify-center space-x-5 mt-10 mb-10">
@@ -329,6 +383,71 @@ export default function TaskModal({ task, projectTask, projectId }) {
                     }}
                   >
                     Back to Project
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+        </>
+      ) : null}
+      {sendFileModal ? (
+        <>
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+            <div className="relative w-auto my-6 mx-auto max-w-4xl lg:min-w-[600px]">
+              {/*content*/}
+              <div className="border-0 rounded-xl shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                {/*header*/}
+                <div className="flex justify-between border-b border-solid">
+                  <div className="flex items-start justify-between py-6 pl-10 border-b border-solid border-slate-200 rounded-t grow">
+                    <h3 className="text-xl font-semibold pt-1">Send File</h3>
+                  </div>
+                  <button
+                    className="w-4 h-4 bg-slate-700 flex justify-center items-center text-white rounded-full text-[9px] m-2"
+                    onClick={() => setSendFileModal(false)}
+                  >
+                    x
+                  </button>
+                </div>
+                {/*body*/}
+                <div className="flex justify-center items-center pt-8">
+                  {selectedFile ? (
+                    <div className="bg-blue-50 p-8 flex justify-center items-center rounded-xl">
+                    <div
+                      onClick={() => filePickerRef.current.click()}
+                      className="bg-[#004064] flex justify-center items-center text-white px-2 py-2 rounded-lg cursor-pointer"
+                    >
+                      <DocumentTextIcon className="h-6 w-6" />
+                    </div>
+                  </div>
+                  ) : (
+                    <div className="bg-blue-50 p-8 flex justify-center items-center rounded-xl">
+                      <div
+                        onClick={() => filePickerRef.current.click()}
+                        className="bg-[#004064] flex justify-center items-center text-white px-2 py-2 rounded-lg cursor-pointer"
+                      >
+                        <PlusIcon className="h-6 w-6" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <input
+                  ref={filePickerRef}
+                  onChange={addFileToAttach}
+                  type="file"
+                  hidden
+                />
+                <div className="flex flex-col items-center  justify-center pt-3">
+                  <p className="font-medium">Uplooad File</p>
+                </div>
+                {/*footer*/}
+                <div className="flex flex-col justify-center items-center space-y-5 mt-10 mb-10 px-10">
+                  <button
+                    className="bg-[#004064] rounded-md text-white w-48 py-3 text-xs"
+                    onClick={sendFile}
+                    disabled= {!selectedFile}
+                  >
+                    {loading? "Adding File...": "Add File"}
                   </button>
                 </div>
               </div>
