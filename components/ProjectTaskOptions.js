@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import DeleteProjectTaskButton from "./DeleteProjectTaskButton";
+import Link from "next/link";
 
 function ProjectTaskOptions({task, projectId}) {
   const [showOptions, setShowOptions] = useState(false);
@@ -100,6 +101,9 @@ function ProjectTaskOptions({task, projectId}) {
         <button className="border-t border-white py-1 text-sm">
           Attachments
         </button>
+        <Link href="/chats">
+          <button className="border-t border-white py-1 text-sm">Chat</button>
+        </Link>
         <DeleteProjectTaskButton projectId={projectId} task={task} />
       </div>
     </div>
