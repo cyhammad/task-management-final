@@ -9,6 +9,8 @@ import { db } from "../firebase";
 import { useRouter } from "next/router";
 import Attachment from "./Attachment";
 import CommentsModal from "./CommentsModal";
+import Link from "next/link";
+import DeleteProjectButton from "./DeleteProjectButton";
 
 function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
   const [showOptions, setShowOptions] = useState(false);
@@ -36,6 +38,10 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
         className={`absolute flex flex-col w-[155px] top-5 rounded bg-[#282828] ${
           showOptions ? null : "hidden"
         } text-white w-fit`}
+        onMouseLeave={() => {
+          setShowOptions(false);
+          setShowUpdateOptions(false);
+        }}
       >
         <button className="px-8 py-1 text-sm" onClick={()=>viewDetails()}>
           View details
@@ -102,6 +108,10 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
           Attachments
         </button>
         <CommentsModal projectId={projectId} userId={userId} taskType={"projecttask"} access={"options"}  onClick={() => {setShowOptions(false); setShowUpdateOptions(false)}} />
+        <Link href="/chats">
+          <button className="border-t border-white py-1 text-sm">Chat</button>
+        </Link>
+        <DeleteProjectButton projectId={projectId} userId={userId} />
       </div>
       {viewAttachment ? (
         <>

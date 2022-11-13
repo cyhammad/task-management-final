@@ -37,7 +37,7 @@ function ProjectTask() {
       onSnapshot(query(collection(db, `users/${uid}/projects/${id}/subtasks`)), (snapshot) => {
         setTaskList(snapshot.docs);
       }),
-    [id, uid, newTasks, todoTasks, inProgressTasks, completedTasks]
+    []
   );
   useEffect(() => {
     var a = taskList.filter((item) => item.status == "new" || !item.status);

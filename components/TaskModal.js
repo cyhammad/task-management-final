@@ -107,6 +107,7 @@ export default function TaskModal({ task, projectTask, projectId }) {
     setLoading(false);
     setSendFileModal(false);
   }
+  console.log("TASK ID =", task.taskId)
   return (
     <>
       <div

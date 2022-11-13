@@ -7,6 +7,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import CommentsModal from "./CommentsModal";
 import DeleteTaskButton from "./DeleteTaskButton";
+import Link from "next/link";
 
 function TaskOptions({ task, openModel, openAttachment, right }) {
   const [showOptions, setShowOptions] = useState(false);
@@ -34,6 +35,10 @@ function TaskOptions({ task, openModel, openAttachment, right }) {
         className={`absolute flex flex-col w-[158px] top-5 rounded bg-[#282828] ${
           showOptions ? null : "hidden"
         } text-white w-fit`}
+        onMouseLeave={() => {
+          setShowOptions(false);
+          setShowUpdateOptions(false);
+        }}
       >
         <button className="px-8 py-1 text-sm" onClick={() => openModel(true)}>
           View details
@@ -111,7 +116,9 @@ function TaskOptions({ task, openModel, openAttachment, right }) {
           taskType={"quicktask"}
           access={"options"}
         />
-        <button className="border-t border-white py-1 text-sm">Chat</button>
+        <Link href="/chats">
+          <button className="border-t border-white py-1 text-sm">Chat</button>
+        </Link>
         <DeleteTaskButton task={task} />
       </div>
     </div>
