@@ -24,19 +24,34 @@ function ProjectTask() {
   const { user } = useAuth();
   const { uid, id } = router.query;
   const [taskList, setTaskList] = useState([]);
+
   const [newTasks, setNewTasks] = useState([]);
   const [todoTasks, setTodoTasks] = useState([]);
   const [inProgressTasks, setInProgressTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
+  const [readyForReviewTasks, setReadyForReviewTasks] = useState([]);
+  const [revisionTasks, setRevisionTasks] = useState([]);
+  const [pendingClientReviewTasks, setPendingClientReviewTasks] = useState([]);
+  const [pending3rdPartyTasks, setPending3rdPartyTasks] = useState([]);
+
   const [newTaskCount, setNewTaskCount] = useState(3);
   const [todoTaskCount, setTodoTaskCount] = useState(3);
   const [inProgressTaskCount, setInProgressTaskCount] = useState(3);
   const [completedTaskCount, setCompletedTaskCount] = useState(3);
+  const [readyForReviewTaskCount, setReadyForReviewTaskCount] = useState(3);
+  const [revisionTaskCount, setRevisionTaskCount] = useState(3);
+  const [pendingClientReviewTaskCount, setPendingClientReviewTaskCount] =
+    useState(3);
+  const [pending3rdPartyTaskCount, setPending3rdPartyTaskCount] = useState(3);
+
   useEffect(
     () =>
-      onSnapshot(query(collection(db, `users/${uid}/projects/${id}/subtasks`)), (snapshot) => {
-        setTaskList(snapshot.docs);
-      }),
+      onSnapshot(
+        query(collection(db, `users/${uid}/projects/${id}/subtasks`)),
+        (snapshot) => {
+          setTaskList(snapshot.docs);
+        }
+      ),
     []
   );
   useEffect(() => {
@@ -55,20 +70,50 @@ function ProjectTask() {
     var a = taskList.filter((item) => item.status == "completed");
     setCompletedTasks(a);
   }, [taskList]);
+  useEffect(() => {
+    var a = taskList.filter((item) => item.data().status == "readyForReview");
+    setReadyForReviewTasks(a);
+  }, [taskList]);
+  useEffect(() => {
+    var a = taskList.filter((item) => item.data().status == "revision");
+    setRevisionTasks(a);
+  }, [taskList]);
+  useEffect(() => {
+    var a = taskList.filter(
+      (item) => item.data().status == "pendingClientReview"
+    );
+    setPendingClientReviewTasks(a);
+  }, [taskList]);
+  useEffect(() => {
+    var a = taskList.filter((item) => item.data().status == "pending3rdParty");
+    setPending3rdPartyTasks(a);
+  }, [taskList]);
   const viewMore = (task) => {
-    if (task == "new"){
-      setNewTaskCount(newTasks.length)
+    if (task == "new") {
+      setNewTaskCount(newTasks.length);
     }
-    if (task == "todo"){
-      setTodoTaskCount(todoTasks.length)
+    if (task == "todo") {
+      setTodoTaskCount(todoTasks.length);
     }
-    if (task == "inProgress"){
-      setInProgressTaskCount(inProgressTasks.length)
+    if (task == "inProgress") {
+      setInProgressTaskCount(inProgressTasks.length);
     }
-    if (task == "completed"){
-      setCompletedTaskCount(completedTasks.length)
+    if (task == "completed") {
+      setCompletedTaskCount(completedTasks.length);
     }
-  }
+    if (task == "pendingClientReview") {
+      setPendingClientReviewTaskCount(pendingClientReviewTasks.length);
+    }
+    if (task == "pending3rdParty") {
+      setPending3rdPartyTaskCount(pending3rdPartyTasks.length);
+    }
+    if (task == "revision") {
+      setRevisionTaskCount(revisionTasks.length);
+    }
+    if (task == "readyForReview") {
+      setReadyForReviewTaskCount(readyForReviewTasks.length);
+    }
+  };
   const viewLess = (task) => {
     if (task == "new") {
       setNewTaskCount(3);
@@ -81,6 +126,18 @@ function ProjectTask() {
     }
     if (task == "completed") {
       setCompletedTaskCount(3);
+    }
+    if (task == "pendingClientReview") {
+      setPendingClientReviewTaskCount(3);
+    }
+    if (task == "pending3rdParty") {
+      setPending3rdPartyTaskCount(3);
+    }
+    if (task == "revision") {
+      setRevisionTaskCount(3);
+    }
+    if (task == "readyForReview") {
+      setReadyForReviewTaskCount(3);
     }
   };
   return (
@@ -99,25 +156,123 @@ function ProjectTask() {
         <h1 className="text-3xl font-bold mt-11">Project Tasks</h1>
         <SubNavBar selectedTab="projects" />
         <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar pb-60">
-          <Column name="New Projects" taskCount={newTasks.length} viewMore={()=>viewMore("new")} viewLess={()=>viewLess("new")} >
+          <Column
+            name="New Projects"
+            taskCount={newTasks.length}
+            viewMore={() => viewMore("new")}
+            viewLess={() => viewLess("new")}
+          >
             {newTasks.slice(0, newTaskCount).map((task) => (
-              <ProjectTaskIns task={task.data()} projectId={id} key={task.data().taskId} />
+              <ProjectTaskIns
+                task={task.data()}
+                projectId={id}
+                key={task.data().taskId}
+              />
             ))}
           </Column>
-          <Column name="Todo" taskCount={todoTasks.length} viewMore={()=>viewMore("todo")} viewLess={()=>viewLess("todo")} >
+          <Column
+            name="Todo"
+            taskCount={todoTasks.length}
+            viewMore={() => viewMore("todo")}
+            viewLess={() => viewLess("todo")}
+          >
             {todoTasks.slice(0, todoTaskCount).map((task) => (
-              <ProjectTaskIns task={task.data()} projectId={id} key={task.data().taskId} />
+              <ProjectTaskIns
+                task={task.data()}
+                projectId={id}
+                key={task.data().taskId}
+              />
             ))}
           </Column>
-          <Column name="In Progress" taskCount={inProgressTasks.length} viewMore={()=>viewMore("inProgress")} viewLess={()=>viewLess("inProgress")} >
+          <Column
+            name="In Progress"
+            taskCount={inProgressTasks.length}
+            viewMore={() => viewMore("inProgress")}
+            viewLess={() => viewLess("inProgress")}
+          >
             {inProgressTasks.slice(0, inProgressTaskCount).map((task) => (
-              <ProjectTaskIns task={task.data()} projectId={id} key={task.data().taskId} />
+              <ProjectTaskIns
+                task={task.data()}
+                projectId={id}
+                key={task.data().taskId}
+              />
             ))}
           </Column>
-          <Column name="Completed" taskCount={completedTasks.length} viewMore={()=>viewMore("completed")} viewLess={()=>viewLess("completed")} >
+          <Column
+            name="Completed"
+            taskCount={completedTasks.length}
+            viewMore={() => viewMore("completed")}
+            viewLess={() => viewLess("completed")}
+          >
             {completedTasks.slice(0, completedTaskCount).map((task) => (
-              <ProjectTaskIns task={task.data()} projectId={id} key={task.data().taskId} />
+              <ProjectTaskIns
+                task={task.data()}
+                projectId={id}
+                key={task.data().taskId}
+              />
             ))}
+          </Column>
+          <Column
+            name="Ready For Review"
+            taskCount={readyForReviewTasks.length}
+            viewMore={() => viewMore("readyForReview")}
+            viewLess={() => viewLess("readyForReview")}
+          >
+            {readyForReviewTasks
+              .slice(0, readyForReviewTaskCount)
+              .map((task) => (
+                <ProjectTaskIns
+                  task={task.data()}
+                  projectId={id}
+                  key={task.data().taskId}
+                />
+              ))}
+          </Column>
+          <Column
+            name="Pending Client Review"
+            taskCount={pendingClientReviewTasks.length}
+            viewMore={() => viewMore("pendingClientReview")}
+            viewLess={() => viewLess("pendingClientReview")}
+          >
+            {pendingClientReviewTasks
+              .slice(0, pendingClientReviewTaskCount)
+              .map((task) => (
+                <ProjectTaskIns
+                  task={task.data()}
+                  projectId={id}
+                  key={task.data().taskId}
+                />
+              ))}
+          </Column>
+          <Column
+            name="Revision"
+            taskCount={revisionTasks.length}
+            viewMore={() => viewMore("revision")}
+            viewLess={() => viewLess("revision")}
+          >
+            {revisionTasks.slice(0, revisionTaskCount).map((task) => (
+              <ProjectTaskIns
+                task={task.data()}
+                projectId={id}
+                key={task.data().taskId}
+              />
+            ))}
+          </Column>
+          <Column
+            name="Pending 3rd Party"
+            taskCount={pending3rdPartyTasks.length}
+            viewMore={() => viewMore("pending3rdParty")}
+            viewLess={() => viewLess("pending3rdParty")}
+          >
+            {pending3rdPartyTasks
+              .slice(0, pending3rdPartyTaskCount)
+              .map((task) => (
+                <ProjectTaskIns
+                  task={task.data()}
+                  projectId={id}
+                  key={task.data().taskId}
+                />
+              ))}
           </Column>
         </div>
       </div>

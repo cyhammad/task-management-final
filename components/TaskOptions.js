@@ -22,6 +22,19 @@ function TaskOptions({ task, openModel, openAttachment, right }) {
       setShowUpdateOptions(false);
     });
   };
+  const archiveAfter30Days = async () => {
+    const date = new Date();
+    const next = new Date(date);
+    next.setDate(next.getDate() + 30);
+    console.log("date: ", next);
+    const docRef = doc(db, `users/${task.userId}/tasks`, task.taskId);
+    updateDoc(docRef, {
+      archiveDate: next,
+    }).then(() => {
+      setShowOptions(false);
+      setShowUpdateOptions(false);
+    });
+  };
   return (
     <div className="flex flex-col items-end justify-end cursor-pointer relative">
       <EllipsisHorizontalIcon
@@ -69,25 +82,25 @@ function TaskOptions({ task, openModel, openAttachment, right }) {
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("inprogress")}
+            onClick={() => updateStatus("pendingClientReview")}
           >
             Pending Client Review
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("inprogress")}
+            onClick={() => updateStatus("pending3rdParty")}
           >
             Pending 3rd Party Action
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("todo")}
+            onClick={() => updateStatus("revision")}
           >
             Revision
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("inprogress")}
+            onClick={() => updateStatus("readyForReview")}
           >
             Ready for review
           </button>
@@ -97,7 +110,10 @@ function TaskOptions({ task, openModel, openAttachment, right }) {
           >
             Completed
           </button>
-          <button className="px-5 py-1 text-sm w-[220px] text-start border-t border-white">
+          <button
+            className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
+            onClick={() => archiveAfter30Days()}
+          >
             Archive After 30 days
           </button>
         </div>

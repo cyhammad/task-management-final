@@ -14,19 +14,31 @@ import {
   onSnapshot,
   orderBy,
   query,
+  serverTimestamp,
+  where,
 } from "firebase/firestore";
 
 export default function Home() {
   const { user, logout } = useAuth();
   const [taskList, setTaskList] = useState([]);
+
   const [newTasks, setNewTasks] = useState([]);
   const [todoTasks, setTodoTasks] = useState([]);
   const [inProgressTasks, setInProgressTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
+  const [readyForReviewTasks, setReadyForReviewTasks] = useState([]);
+  const [revisionTasks, setRevisionTasks] = useState([]);
+  const [pendingClientReviewTasks, setPendingClientReviewTasks] = useState([]);
+  const [pending3rdPartyTasks, setPending3rdPartyTasks] = useState([]);
+
   const [newTaskCount, setNewTaskCount] = useState(3);
   const [todoTaskCount, setTodoTaskCount] = useState(3);
   const [inProgressTaskCount, setInProgressTaskCount] = useState(3);
   const [completedTaskCount, setCompletedTaskCount] = useState(3);
+  const [readyForReviewTaskCount, setReadyForReviewTaskCount] = useState(3);
+  const [revisionTaskCount, setRevisionTaskCount] = useState(3);
+  const [pendingClientReviewTaskCount, setPendingClientReviewTaskCount] = useState(3);
+  const [pending3rdPartyTaskCount, setPending3rdPartyTaskCount] = useState(3);
   useEffect(
     () =>
       onSnapshot(query(collectionGroup(db, "projects")), (snapshot) => {
@@ -50,6 +62,22 @@ export default function Home() {
     var a = taskList.filter((item) => item.data().status == "completed");
     setCompletedTasks(a);
   }, [taskList]);
+  useEffect(() => {
+    var a = taskList.filter((item) => item.data().status == "readyForReview");
+    setReadyForReviewTasks(a);
+  }, [taskList]);
+  useEffect(() => {
+    var a = taskList.filter((item) => item.data().status == "revision");
+    setRevisionTasks(a);
+  }, [taskList]);
+  useEffect(() => {
+    var a = taskList.filter((item) => item.data().status == "pendingClientReview");
+    setPendingClientReviewTasks(a);
+  }, [taskList]);
+  useEffect(() => {
+    var a = taskList.filter((item) => item.data().status == "pending3rdParty");
+    setPending3rdPartyTasks(a);
+  }, [taskList]);
   const viewMore = (task) => {
     if (task == "new") {
       setNewTaskCount(newTasks.length);
@@ -62,6 +90,18 @@ export default function Home() {
     }
     if (task == "completed") {
       setCompletedTaskCount(completedTasks.length);
+    }
+    if (task == "pendingClientReview") {
+      setPendingClientReviewTaskCount(pendingClientReviewTasks.length);
+    }
+    if (task == "pending3rdParty") {
+      setPending3rdPartyTaskCount(pending3rdPartyTasks.length);
+    }
+    if (task == "revision") {
+      setRevisionTaskCount(revisionTasks.length);
+    }
+    if (task == "readyForReview") {
+      setReadyForReviewTaskCount(readyForReviewTasks.length);
     }
   };
   const viewLess = (task) => {
@@ -76,6 +116,18 @@ export default function Home() {
     }
     if (task == "completed") {
       setCompletedTaskCount(3);
+    }
+    if (task == "pendingClientReview") {
+      setPendingClientReviewTaskCount(3);
+    }
+    if (task == "pending3rdParty") {
+      setPending3rdPartyTaskCount(3);
+    }
+    if (task == "revision") {
+      setRevisionTaskCount(3);
+    }
+    if (task == "readyForReview") {
+      setReadyForReviewTaskCount(3);
     }
   };
   return (
@@ -92,7 +144,7 @@ export default function Home() {
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 lg:min-h-screen">
         <h1 className="text-3xl font-semibold mt-11">Projects</h1>
         <SubNavBar selectedTab="projects" />
-        <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar pb-60">
+        <div className="flex space-x-5 w-full overflow-x-auto scroll-smooth scrollbar pb-60 mb-10">
           <Column
             name="New Projects"
             taskCount={newTasks.length}
@@ -100,19 +152,17 @@ export default function Home() {
             viewLess={() => viewLess("new")}
           >
             {newTasks.slice(0, newTaskCount).map((task) => (
-              <>
-                <Project
-                  name={task.data().title}
-                  priority={task.data().priorityValue}
-                  userId={task.data().userId}
-                  desc={task.data().description}
-                  projectId={task.data().projectId}
-                  key={task.data().id}
-                  comments={task.data().comments}
-                  status={task.data().status}
-                  files={task.data().files}
-                />
-              </>
+              <Project
+                name={task.data().title}
+                priority={task.data().priorityValue}
+                userId={task.data().userId}
+                desc={task.data().description}
+                projectId={task.data().projectId}
+                key={task.data().id}
+                comments={task.data().comments}
+                status={task.data().status}
+                files={task.data().files}
+              />
             ))}
           </Column>
           <Column
@@ -122,19 +172,17 @@ export default function Home() {
             viewLess={() => viewLess("todo")}
           >
             {todoTasks.slice(0, newTaskCount).map((task) => (
-              <>
-                <Project
-                  name={task.data().title}
-                  priority={task.data().priorityValue}
-                  userId={task.data().userId}
-                  desc={task.data().description}
-                  projectId={task.data().projectId}
-                  key={task.data().id}
-                  comments={task.data().comments}
-                  status={task.data().status}
-                  files={task.data().files}
-                />
-              </>
+              <Project
+                name={task.data().title}
+                priority={task.data().priorityValue}
+                userId={task.data().userId}
+                desc={task.data().description}
+                projectId={task.data().projectId}
+                key={task.data().id}
+                comments={task.data().comments}
+                status={task.data().status}
+                files={task.data().files}
+              />
             ))}
           </Column>
           <Column
@@ -144,19 +192,17 @@ export default function Home() {
             viewLess={() => viewLess("inProgress")}
           >
             {inProgressTasks.slice(0, inProgressTaskCount).map((task) => (
-              <>
-                <Project
-                  name={task.data().title}
-                  priority={task.data().priorityValue}
-                  userId={task.data().userId}
-                  desc={task.data().description}
-                  projectId={task.data().projectId}
-                  key={task.data().id}
-                  comments={task.data().comments}
-                  status={task.data().status}
-                  files={task.data().files}
-                />
-              </>
+              <Project
+                name={task.data().title}
+                priority={task.data().priorityValue}
+                userId={task.data().userId}
+                desc={task.data().description}
+                projectId={task.data().projectId}
+                key={task.data().id}
+                comments={task.data().comments}
+                status={task.data().status}
+                files={task.data().files}
+              />
             ))}
           </Column>
           <Column
@@ -179,6 +225,88 @@ export default function Home() {
                   files={task.data().files}
                 />
               </>
+            ))}
+          </Column>
+          <Column
+            name="Ready For Review"
+            taskCount={readyForReviewTasks.length}
+            viewMore={() => viewMore("readyForReview")}
+            viewLess={() => viewLess("readyForReview")}
+          >
+            {readyForReviewTasks.slice(0, readyForReviewTaskCount).map((task) => (
+              <>
+                <Project
+                  name={task.data().title}
+                  priority={task.data().priorityValue}
+                  userId={task.data().userId}
+                  desc={task.data().description}
+                  projectId={task.data().projectId}
+                  key={task.data().id}
+                  comments={task.data().comments}
+                  status={task.data().status}
+                  files={task.data().files}
+                />
+              </>
+            ))}
+          </Column>
+          <Column
+            name="Pending Client Review"
+            taskCount={pendingClientReviewTasks.length}
+            viewMore={() => viewMore("pendingClientReview")}
+            viewLess={() => viewLess("pendingClientReview")}
+          >
+            {pendingClientReviewTasks.slice(0, pendingClientReviewTaskCount).map((task) => (
+              <Project
+                name={task.data().title}
+                priority={task.data().priorityValue}
+                userId={task.data().userId}
+                desc={task.data().description}
+                projectId={task.data().projectId}
+                key={task.data().id}
+                comments={task.data().comments}
+                status={task.data().status}
+                files={task.data().files}
+              />
+            ))}
+          </Column>
+          <Column
+            name="Revision"
+            taskCount={revisionTasks.length}
+            viewMore={() => viewMore("revision")}
+            viewLess={() => viewLess("revision")}
+          >
+            {revisionTasks.slice(0, revisionTaskCount).map((task) => (
+              <Project
+                name={task.data().title}
+                priority={task.data().priorityValue}
+                userId={task.data().userId}
+                desc={task.data().description}
+                projectId={task.data().projectId}
+                key={task.data().id}
+                comments={task.data().comments}
+                status={task.data().status}
+                files={task.data().files}
+              />
+            ))}
+          </Column>
+          <Column
+            name="Pending 3rd Party"
+            taskCount={pending3rdPartyTasks.length}
+            viewMore={() => viewMore("pending3rdParty")}
+            viewLess={() => viewLess("pending3rdParty")}
+          >
+            {pending3rdPartyTasks.slice(0, pending3rdPartyTaskCount).map((task) => (
+              <Project
+                name={task.data().title}
+                priority={task.data().priorityValue}
+                userId={task.data().userId}
+                desc={task.data().description}
+                projectId={task.data().projectId}
+                key={task.data().id}
+                comments={task.data().comments}
+                status={task.data().status}
+                files={task.data().files}
+              />
             ))}
           </Column>
         </div>

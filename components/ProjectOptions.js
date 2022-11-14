@@ -18,7 +18,9 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
   const [viewAttachment, setViewAttachment] = useState(false);
   const router = useRouter();
   const viewDetails = () => {
-    taskNumber != 0 ? router.push(`/projecttasks/${userId}/${projectId}`) : alert("No tasks in this project");
+    taskNumber != 0
+      ? router.push(`/projecttasks/${userId}/${projectId}`)
+      : alert("No tasks in this project");
   };
   const updateStatus = async (status) => {
     const docRef = doc(db, `users/${userId}/projects`, projectId);
@@ -29,11 +31,28 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
       setShowUpdateOptions(false);
     });
   };
+  const archiveAfter30Days = async () => {
+    const date = new Date();
+    const next = new Date(date);
+    next.setDate(next.getDate() + 30);
+    console.log("date: ", next);
+    const docRef = doc(db, `users/${userId}/projects`, projectId);
+    updateDoc(docRef, {
+      archiveDate: next,
+    }).then(() => {
+      setShowOptions(false);
+      setShowUpdateOptions(false);
+    });
+  };
   return (
-    <div
-      className="flex flex-col items-end justify-end cursor-pointer relative"
-    >
-      <EllipsisHorizontalIcon className="h-8 w-8"  onClick={() => {setShowOptions(!showOptions); setShowUpdateOptions(false)}} />
+    <div className="flex flex-col items-end justify-end cursor-pointer relative">
+      <EllipsisHorizontalIcon
+        className="h-8 w-8"
+        onClick={() => {
+          setShowOptions(!showOptions);
+          setShowUpdateOptions(false);
+        }}
+      />
       <div
         className={`absolute flex flex-col w-[155px] top-5 rounded bg-[#282828] ${
           showOptions ? null : "hidden"
@@ -43,7 +62,7 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
           setShowUpdateOptions(false);
         }}
       >
-        <button className="px-8 py-1 text-sm" onClick={()=>viewDetails()}>
+        <button className="px-8 py-1 text-sm" onClick={() => viewDetails()}>
           View details
         </button>
         <button
@@ -53,9 +72,9 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
           Update Status
         </button>
         <div
-          className={`bg-[#282828] absolute ${right ? 'left-[-220px]': 'left-[150px]'} z-10 top-[28px] w-[220px] ${
-            showUpdateOptions ? null : "hidden"
-          }`}
+          className={`bg-[#282828] absolute ${
+            right ? "left-[-220px]" : "left-[150px]"
+          } z-10 top-[28px] w-[220px] ${showUpdateOptions ? null : "hidden"}`}
           onMouseLeave={() => setShowUpdateOptions(false)}
         >
           <button
@@ -72,25 +91,25 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("inprogress")}
+            onClick={() => updateStatus("pendingClientReview")}
           >
             Pending Client Review
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("inprogress")}
+            onClick={() => updateStatus("pending3rdParty")}
           >
             Pending 3rd Party Action
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("todo")}
+            onClick={() => updateStatus("revision")}
           >
             Revision
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("inprogress")}
+            onClick={() => updateStatus("readyForReview")}
           >
             Ready for review
           </button>
@@ -100,14 +119,33 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
           >
             Completed
           </button>
-          <button className="px-5 py-1 text-sm w-[220px] text-start border-t border-white">
+          <button
+            className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
+            onClick={() => archiveAfter30Days()}
+          >
             Archive After 30 days
           </button>
         </div>
-        <button className="border-t border-white py-1 text-sm" onClick={()=>{setViewAttachment(true); setShowOptions(false); setShowUpdateOptions(false);}}>
+        <button
+          className="border-t border-white py-1 text-sm"
+          onClick={() => {
+            setViewAttachment(true);
+            setShowOptions(false);
+            setShowUpdateOptions(false);
+          }}
+        >
           Attachments
         </button>
-        <CommentsModal projectId={projectId} userId={userId} taskType={"projecttask"} access={"options"}  onClick={() => {setShowOptions(false); setShowUpdateOptions(false)}} />
+        <CommentsModal
+          projectId={projectId}
+          userId={userId}
+          taskType={"projecttask"}
+          access={"options"}
+          onClick={() => {
+            setShowOptions(false);
+            setShowUpdateOptions(false);
+          }}
+        />
         <Link href="/chats">
           <button className="border-t border-white py-1 text-sm">Chat</button>
         </Link>

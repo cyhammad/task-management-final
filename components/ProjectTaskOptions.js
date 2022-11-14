@@ -1,28 +1,48 @@
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
-import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  getDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import DeleteProjectTaskButton from "./DeleteProjectTaskButton";
 import Link from "next/link";
 
-function ProjectTaskOptions({task, projectId}) {
+function ProjectTaskOptions({ task, projectId }) {
   const [showOptions, setShowOptions] = useState(false);
   const [showUpdateOptions, setShowUpdateOptions] = useState(false);
   const updateStatus = async (status) => {
-    const docRef = doc(db, `users/${task.userId}/projects`, projectId);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()){
-        const oldTasks = docSnap.data().tasks;
-        const prevDoc = oldTasks.filter((t)=>t.taskId == task.taskId)[0];
-        const updatedDoc = {...prevDoc, status: status}   
-        const newTasks = oldTasks.filter((t)=>t.taskId != task.taskId);
-        newTasks.push(updatedDoc)
-        updateDoc(docRef, {
-            tasks: newTasks
-        }).then(()=>{
-            console.log("Added")
-        })
-    }
+    const docRef = doc(
+      db,
+      `users/${task.userId}/projects/${projectId}/subtasks`,
+      task.taskId
+    );
+    updateDoc(docRef, {
+      status: status,
+    }).then(() => {
+      setShowOptions(false);
+      setShowUpdateOptions(false);
+    });
+  };
+  const archiveAfter30Days = async () => {
+    const date = new Date();
+    const next = new Date(date);
+    next.setDate(next.getDate() + 30);
+    console.log("date: ", next);
+    const docRef = doc(
+      db,
+      `users/${task.userId}/projects/${projectId}/subtasks`,
+      task.taskId
+    );
+    updateDoc(docRef, {
+      archiveDate: next,
+    }).then(() => {
+      setShowOptions(false);
+      setShowUpdateOptions(false);
+    });
   };
   return (
     <div
@@ -63,28 +83,28 @@ function ProjectTaskOptions({task, projectId}) {
             onClick={() => updateStatus("inprogress")}
           >
             In Progress
-          </button> 
+          </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("inprogress")}
+            onClick={() => updateStatus("pendingClientReview")}
           >
             Pending Client Review
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("inprogress")}
+            onClick={() => updateStatus("pending3rdParty")}
           >
             Pending 3rd Party Action
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("todo")}
+            onClick={() => updateStatus("revision")}
           >
             Revision
           </button>
           <button
             className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
-            onClick={() => updateStatus("inprogress")}
+            onClick={() => updateStatus("readyForReview")}
           >
             Ready for review
           </button>
@@ -94,7 +114,10 @@ function ProjectTaskOptions({task, projectId}) {
           >
             Completed
           </button>
-          <button className="px-5 py-1 text-sm w-[220px] text-start border-t border-white">
+          <button
+            className="px-5 py-1 text-sm w-[220px] text-start border-t border-white"
+            onClick={() => archiveAfter30Days()}
+          >
             Archive After 30 days
           </button>
         </div>
