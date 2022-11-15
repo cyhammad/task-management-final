@@ -1,17 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   EllipsisHorizontalIcon,
   ChatBubbleOvalLeftEllipsisIcon,
 } from "@heroicons/react/24/outline";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 import CommentsModal from "./CommentsModal";
 import DeleteTaskButton from "./DeleteTaskButton";
 import Link from "next/link";
+import axios from "axios";
 
 function TaskOptions({ task, openModel, openAttachment, right }) {
   const [showOptions, setShowOptions] = useState(false);
   const [showUpdateOptions, setShowUpdateOptions] = useState(false);
+
+  const [receiver, setReceiver] = useState(null);
+
+  useEffect(() => {
+    const userDoc = getDoc(doc(db, "users", task.userId)).then(
+      (docSnap) => {
+        setReceiver(docSnap.data());
+      }
+    );
+  }, [task.userId]);
+
   const updateStatus = async (status) => {
     const docRef = doc(db, `users/${task.userId}/tasks`, task.taskId);
     updateDoc(docRef, {
@@ -20,6 +32,36 @@ function TaskOptions({ task, openModel, openAttachment, right }) {
     }).then(() => {
       setShowOptions(false);
       setShowUpdateOptions(false);
+    });
+    await addDoc(collection(db, `users/${task.userId}/notifications`), {
+      isSeen: false,
+      title: `Status Updated`,
+      body: 'Admin changed the status of your quick task',
+      sentBy: auth.currentUser.uid,
+      createdAt: serverTimestamp(),
+    });
+    var data = JSON.stringify({
+      "to": receiver.token,
+      "notification": {
+        "body": 'Admin changed the status of your quick task',
+        "title": "Status Updated"
+      }
+    });
+    var config = {
+      method: 'post',
+      url: 'https://fcm.googleapis.com/fcm/send',
+      headers: { 
+        'Authorization': 'Bearer AAAA7j_APoE:APA91bHYEq6k0otSNNtsrEvIaek_yNalzbo8ZGNN0QAe887_Xh8UV3FJdGCtOSTe2_u-OKal23aCyWJgcOHA7NGKYsnF3hC1zHbuiQ4HM5hmlNB8mgHAu4YDJ-p5uftZx4AyeTkZzXGa', 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
     });
   };
   const archiveAfter30Days = async () => {

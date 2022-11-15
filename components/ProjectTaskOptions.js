@@ -1,19 +1,34 @@
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  addDoc,
   arrayRemove,
   arrayUnion,
+  collection,
   doc,
   getDoc,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import DeleteProjectTaskButton from "./DeleteProjectTaskButton";
 import Link from "next/link";
+import axios from "axios";
 
 function ProjectTaskOptions({ task, projectId }) {
   const [showOptions, setShowOptions] = useState(false);
   const [showUpdateOptions, setShowUpdateOptions] = useState(false);
+
+  const [receiver, setReceiver] = useState(null);
+
+  useEffect(() => {
+    const userDoc = getDoc(doc(db, "users", task.userId)).then(
+      (docSnap) => {
+        setReceiver(docSnap.data());
+      }
+    );
+  }, [task.userId]);
+
   const updateStatus = async (status) => {
     const docRef = doc(
       db,
@@ -22,9 +37,40 @@ function ProjectTaskOptions({ task, projectId }) {
     );
     updateDoc(docRef, {
       status: status,
+      isPending: status == "completed" ? false : true,
     }).then(() => {
       setShowOptions(false);
       setShowUpdateOptions(false);
+    });
+    await addDoc(collection(db, `users/${task.userId}/notifications`), {
+      isSeen: false,
+      title: `Status Updated`,
+      body: 'Admin changed the status of your project task',
+      sentBy: auth.currentUser.uid,
+      createdAt: serverTimestamp(),
+    });
+    var data = JSON.stringify({
+      "to": receiver.token,
+      "notification": {
+        "body": 'Admin changed the status of your project task',
+        "title": "Status Updated"
+      }
+    });
+    var config = {
+      method: 'post',
+      url: 'https://fcm.googleapis.com/fcm/send',
+      headers: { 
+        'Authorization': 'Bearer AAAA7j_APoE:APA91bHYEq6k0otSNNtsrEvIaek_yNalzbo8ZGNN0QAe887_Xh8UV3FJdGCtOSTe2_u-OKal23aCyWJgcOHA7NGKYsnF3hC1zHbuiQ4HM5hmlNB8mgHAu4YDJ-p5uftZx4AyeTkZzXGa', 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
     });
   };
   const archiveAfter30Days = async () => {

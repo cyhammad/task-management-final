@@ -7,7 +7,7 @@ import Column from "../components/Column";
 import Project from "../components/Project";
 import { faker } from "@faker-js/faker";
 import { useEffect, useState } from "react";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import {
   collection,
   collectionGroup,
@@ -21,7 +21,6 @@ import {
 export default function Home() {
   const { user, logout } = useAuth();
   const [taskList, setTaskList] = useState([]);
-
   const [newTasks, setNewTasks] = useState([]);
   const [todoTasks, setTodoTasks] = useState([]);
   const [inProgressTasks, setInProgressTasks] = useState([]);

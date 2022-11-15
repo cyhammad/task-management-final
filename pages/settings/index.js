@@ -13,6 +13,7 @@ import ChangeProfileImageModal from "../../components/ChangeProfileImageModal";
 import Link from "next/link";
 
 function Settings() {
+
     const [passModal, setPassModal] = useState(false);
     const [emailModal, setEmailModal] = useState(false);
   return (

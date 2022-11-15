@@ -106,7 +106,7 @@ function Users({ userList }) {
               phone={user.phoneNumber ? user.phoneNumber : "0000 0000000"}
               status="active"
               profileImage={user.profilePic}
-              lastSeen="12 mins ago."
+              lastSeen={user.createdAt}
               select={allSelected}
               key={user.uid}
               selectedUsers={selectedUsers}

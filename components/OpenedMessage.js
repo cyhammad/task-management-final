@@ -20,6 +20,7 @@ import { auth, db, storage } from "../firebase";
 import Image from "next/image";
 import { useAuth } from "../context/AuthContext";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import axios from "axios";
 
 function OpenedMessage({ chatDetails }) {
   const { user } = useAuth();
@@ -124,6 +125,29 @@ function OpenedMessage({ chatDetails }) {
       body: msg,
       sentBy: auth.currentUser.uid,
       createdAt: serverTimestamp(),
+    });
+    var data = JSON.stringify({
+      "to": recipient.token,
+      "notification": {
+        "body": msg,
+        "title": "Admin sent a message"
+      }
+    });
+    var config = {
+      method: 'post',
+      url: 'https://fcm.googleapis.com/fcm/send',
+      headers: { 
+        'Authorization': 'Bearer AAAA7j_APoE:APA91bHYEq6k0otSNNtsrEvIaek_yNalzbo8ZGNN0QAe887_Xh8UV3FJdGCtOSTe2_u-OKal23aCyWJgcOHA7NGKYsnF3hC1zHbuiQ4HM5hmlNB8mgHAu4YDJ-p5uftZx4AyeTkZzXGa', 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
     });
   };
   const addFileToMsg = (e) => {

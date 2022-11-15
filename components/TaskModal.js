@@ -195,6 +195,7 @@ export default function TaskModal({ task, projectTask, projectId }) {
           openModel={setShowModal}
           openAttachment={setViewAttachment}
           projectId={projectId}
+          
         />
       ) : (
         <TaskOptions

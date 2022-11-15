@@ -78,6 +78,19 @@ function SubNavBar({ selectedTab, children }) {
             </Link>
           </div>
         </div>
+        <div
+          className={
+            selectedTab == "archive"
+              ? "sub-nav-item sub-nav-selected"
+              : "sub-nav-item"
+          }
+        >
+          <div className="text-center">
+            <Link href="/archive">
+              <a>Archive</a>
+            </Link>
+          </div>
+        </div>
       </div>
       <div className="pt-3 lg:pt-0">{children}</div>
     </div>
