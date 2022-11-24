@@ -55,19 +55,19 @@ function ProjectTask() {
     []
   );
   useEffect(() => {
-    var a = taskList.filter((item) => item.status == "new" || !item.status);
+    var a = taskList.filter((item) => item.data().status == "new");
     setNewTasks(a);
   }, [taskList]);
   useEffect(() => {
-    var a = taskList.filter((item) => item.status == "todo");
+    var a = taskList.filter((item) => item.data().status == "todo");
     setTodoTasks(a);
   }, [taskList]);
   useEffect(() => {
-    var a = taskList.filter((item) => item.status == "inprogress");
+    var a = taskList.filter((item) => item.data().status == "inprogress");
     setInProgressTasks(a);
   }, [taskList]);
   useEffect(() => {
-    var a = taskList.filter((item) => item.status == "completed");
+    var a = taskList.filter((item) => item.data().status == "completed");
     setCompletedTasks(a);
   }, [taskList]);
   useEffect(() => {
@@ -88,6 +88,7 @@ function ProjectTask() {
     var a = taskList.filter((item) => item.data().status == "pending3rdParty");
     setPending3rdPartyTasks(a);
   }, [taskList]);
+
   const viewMore = (task) => {
     if (task == "new") {
       setNewTaskCount(newTasks.length);

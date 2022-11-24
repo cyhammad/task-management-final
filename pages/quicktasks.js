@@ -136,7 +136,6 @@ function QuickTasks() {
       setReadyForReviewTaskCount(3);
     }
   };
-  console.log("Tasks", tasks)
   return (
     <div className="bg-default">
       <Head>

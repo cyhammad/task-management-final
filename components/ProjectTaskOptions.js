@@ -15,7 +15,7 @@ import DeleteProjectTaskButton from "./DeleteProjectTaskButton";
 import Link from "next/link";
 import axios from "axios";
 
-function ProjectTaskOptions({ task, projectId, openAttachment }) {
+function ProjectTaskOptions({ task, projectId, openAttachment, right }) {
   const [showOptions, setShowOptions] = useState(false);
   const [showUpdateOptions, setShowUpdateOptions] = useState(false);
 
@@ -97,7 +97,7 @@ function ProjectTaskOptions({ task, projectId, openAttachment }) {
     >
       <EllipsisHorizontalIcon className="h-8 w-8" />
       <div
-        className={`absolute flex flex-col w-[155px] top-5 rounded bg-[#282828] ${
+        className={`absolute flex flex-col w-[158px] top-5 rounded bg-[#282828] ${
           showOptions ? null : "hidden"
         } text-white w-fit`}
         onMouseLeave={() => {
@@ -113,9 +113,9 @@ function ProjectTaskOptions({ task, projectId, openAttachment }) {
           Update Status
         </button>
         <div
-          className={`bg-[#282828] absolute left-[150px] top-[28px] w-[220px] ${
-            showUpdateOptions ? null : "hidden"
-          }`}
+          className={`bg-[#282828] absolute ${
+            right ? "left-[-220px]" : "left-[150px]"
+          } z-10 top-[28px] w-[220px] ${showUpdateOptions ? null : "hidden"}`}
           onMouseLeave={() => setShowUpdateOptions(false)}
         >
           <button

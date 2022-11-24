@@ -24,6 +24,7 @@ function Comment({
   key,
   comment,
   taskId,
+  userId,
   projectId,
   projectTaskId,
   taskType,
@@ -35,16 +36,16 @@ function Comment({
   const [replyInput, setReplyInput] = useState("");
   const replyQuery =
     taskType == "quicktask"
-      ? `users/${comment.addedBy}/tasks/${taskId}/comments/${commentId}/replies`
+      ? `users/${userId}/tasks/${taskId}/comments/${commentId}/replies`
       : taskType == "projectTask"
-      ? `users/${comment.addedBy}/projects/${projectId}/subtasks/${projectTaskId}/comments/${commentId}/replies`
-      : `users/${comment.addedBy}/projects/${projectId}/comments/${commentId}/replies`;
+      ? `users/${userId}/projects/${projectId}/subtasks/${projectTaskId}/comments/${commentId}/replies`
+      : `users/${userId}/projects/${projectId}/comments/${commentId}/replies`;
   const commentQuery =
     taskType == "quicktask"
-      ? `users/${comment.addedBy}/tasks/${taskId}/comments/${commentId}`
+      ? `users/${userId}/tasks/${taskId}/comments/${commentId}`
       : taskType == "projectTask"
-      ? `users/${comment.addedBy}/projects/${projectId}/subtasks/${projectTaskId}/comments/${commentId}`
-      : `users/${comment.addedBy}/projects/${projectId}/comments/${commentId}`;
+      ? `users/${userId}/projects/${projectId}/subtasks/${projectTaskId}/comments/${commentId}`
+      : `users/${userId}/projects/${projectId}/comments/${commentId}`;
   useEffect(() => {
     if (comment.addedBy != undefined) {
       const docRef = doc(db, "users", comment.addedBy);

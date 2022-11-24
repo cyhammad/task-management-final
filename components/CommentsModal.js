@@ -52,7 +52,7 @@ function CommentsModal({
           var replies = 0;
           var comments = 0;
           snapshot.docs.forEach((docIns) => {
-            docIns.data().replies ? (replies = docIns.data().replies) : null;
+            docIns.data().replies ? replies = replies + (replies = docIns.data().replies) : null;
             comments = comments + 1;
           });
           setCommentCount(replies + comments);
@@ -77,6 +77,7 @@ function CommentsModal({
       addComment();
     }
   };
+  console.log("CCCC", comments)
   return (
     <div>
       {access == "options" && (
@@ -137,19 +138,12 @@ function CommentsModal({
                 <div className="flex justify-between border-b border-solid">
                   <div className="flex justify-between items-center py-6 pl-10 border-b border-solid border-slate-200 rounded-t grow">
                     <div className=" rounded-md bg-white">
-                      <Image
-                        src={auth.currentUser.photoURL}
-                        alt="profile"
-                        height={50}
-                        width={50}
-                        className="h-10 cursor-pointer rounded-full"
-                      />
                       {auth.currentUser.photoURL !== "" ? (
                         <Image
                           src={auth.currentUser.photoURL}
                           alt="profile"
-                          height={40}
-                          width={40}
+                          height={50}
+                          width={50}
                           className="h-10 cursor-pointer rounded-full"
                         />
                       ) : (
@@ -186,6 +180,7 @@ function CommentsModal({
                     <Comment
                       comment={comment.data()}
                       key={comment.id}
+                      userId={userId}
                       taskId={taskId}
                       projectId={projectId}
                       projectTaskId={projectTaskId}

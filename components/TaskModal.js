@@ -204,6 +204,9 @@ export default function TaskModal({ task, projectTask, projectId }) {
           openModel={setShowModal}
           openAttachment={setViewAttachment}
           projectId={projectId}
+          right={
+            task.status == undefined || task.status == "new" ? false : true
+          }
           
         />
       ) : (
