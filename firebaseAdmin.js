@@ -7,7 +7,8 @@ import serviceAccount from './serviceAccountKey.json';
 const app = !getApps().length ? initializeApp({
   credential: cert(serviceAccount)
 }) : getApp();
-const db = getFirestore();
-const storage = getStorage();
-const auth = getAuth(app);
-export { app, db, storage, auth };
+const adminDb = getFirestore();
+const adminStorage = getStorage();
+const adminAuth = getAuth(app);
+
+export { adminDb, adminStorage, adminAuth };

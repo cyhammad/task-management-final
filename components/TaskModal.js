@@ -24,7 +24,6 @@ export default function TaskModal({ task, projectTask, projectId }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [filename, setFilename] = useState("");
   const filePickerRef = useRef(null);
-
   useEffect(() => {
     if (task.userId != undefined) {
       const docRef = doc(db, "users", task.userId);
@@ -52,7 +51,8 @@ export default function TaskModal({ task, projectTask, projectId }) {
     }
   }, [task]);
   const handleMarkComplete = async () => {
-    const docRef = doc(db, `users/${task.userId}/tasks`, task.taskId);
+    const markQuery = !projectTask ? `users/${task.userId}/tasks` : `users/${task.userId}/projects/${projectId}/subtasks`;
+    const docRef = doc(db, markQuery, task.taskId);
     updateDoc(docRef, {
       status: "completed",
       isPending: false,
@@ -107,7 +107,6 @@ export default function TaskModal({ task, projectTask, projectId }) {
     setLoading(false);
     setSendFileModal(false);
   }
-  console.log("TASK ID =", task.taskId)
   return (
     <>
       <div
@@ -130,8 +129,8 @@ export default function TaskModal({ task, projectTask, projectId }) {
               </div>
             )}
           </div>
-          <h1>
-            {task.title.slice(0, 15)}
+          <h1 className="break-words w-[65%]">
+            {task.title.slice(0, 15 )}
             {task.title.length > 15 ? " . . ." : null}
           </h1>
         </div>
@@ -152,17 +151,27 @@ export default function TaskModal({ task, projectTask, projectId }) {
         </span>
       </div>
       <div
-        className="text-gray-400 pb-4 cursor-pointer"
+        className="text-gray-400 pb-4 cursor-pointer break-words w-full"
         onClick={() => setShowModal(true)}
       >
-        {task.description.slice(0, 30)}
+        {task.description.slice(0, 100)}{task.description.length > 100 ? " ...": null}
       </div>
-      <CommentsModal
-        taskId={task.taskId}
-        userId={task.userId}
-        taskType={"quicktask"}
-        access={"modal"}
-      />
+      {projectTask ? (
+        <CommentsModal
+          projectId={projectId}
+          projectTaskId={task.taskId}
+          userId={task.userId}
+          taskType={"projectTask"}
+          access={"modal"}
+        />
+      ):(
+        <CommentsModal
+          taskId={task.taskId}
+          userId={task.userId}
+          taskType={"quicktask"}
+          access={"modal"}
+        />
+      )}
       <div
         className={
           task.status == undefined && task.dueDateTime == undefined
@@ -209,13 +218,13 @@ export default function TaskModal({ task, projectTask, projectId }) {
       )}
       {showModal ? (
         <>
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none px-1 max-h-screen">
             <div className="relative w-auto min-w-[70vw] my-6 mx-auto max-w-4xl">
               {/*content*/}
               <div className="border-0 rounded-xl shadow-lg relative flex flex-col  bg-white outline-none focus:outline-none">
                 {/*header*/}
                 <div className="flex justify-between border-b border-solid">
-                  <div className="flex items-start justify-between py-6 pl-10 border-b border-solid border-slate-200 rounded-t grow">
+                  <div className="flex flex-col sm:flex-row items-start justify-between py-6 pl-10 border-b border-solid border-slate-200 rounded-t grow">
                     <h3 className="text-xl font-semibold pt-1">Task Details</h3>
                     <div className="flex space-x-2 pt-2">
                       <span
@@ -225,7 +234,7 @@ export default function TaskModal({ task, projectTask, projectId }) {
                             : "rounded-sm bg-gray-100 text-gray-500 px-3 text-xs py-[3px] cursor-pointer"
                         }
                       >
-                        Est. {remainingTime}
+                        {remainingTime}
                       </span>
                       <span
                         className="rounded-sm bg-gray-100 text-gray-500 px-3 text-xs py-[3px] cursor-pointer"
@@ -247,8 +256,8 @@ export default function TaskModal({ task, projectTask, projectId }) {
                   </button>
                 </div>
                 {/*body*/}
-                <div className="flex">
-                  <div className="rounded-md ml-12 mr-5 pt-5">
+                <div className="flex w-full">
+                  <div className="rounded-md ml-10 mr-5 pt-5">
                     {userPic !== "" ? (
                       <Image
                         src={userPic}
@@ -263,20 +272,20 @@ export default function TaskModal({ task, projectTask, projectId }) {
                       </div>
                     )}
                   </div>
-                  <div>
-                    <div className="pt-5">
-                      <div className="mb-8">
-                        <h1 className="font-medium text-lg">{task.title}</h1>
-                        <p className="text-sm text-gray-500 pt-1">
-                          {task.description}
+                  <div className="w-full">
+                    <div className="pt-5 w-[80%]">
+                      <div className="mb-8 w-full">
+                        <h1 className="font-medium text-lg break-words">{task.title}</h1>
+                        <p className="text-sm text-gray-500 pt-1 break-words">
+                          {task.description.slice(0,24)}
                         </p>
                       </div>
                       <p className="font-medium text-sm">Description</p>
-                      <p className="text-xs text-gray-500 pt-1">
+                      <p className="text-xs pr-10 text-gray-500 pt-1 break-words h-20 overflow-auto scrollbar w-[70%] sm:w-full">
                         {task.description}
                       </p>
                     </div>
-                    <div className="pt-5">
+                    <div className="pt-5 w-[50%] sm:w-[80%]">
                       <p className="font-medium text-sm">Due Date</p>
                       <div className="flex text-md font-normal items-center space-x-3 pt-5">
                         <span>{new Date(task.dueDateTime).getDate()}</span>
@@ -294,7 +303,17 @@ export default function TaskModal({ task, projectTask, projectId }) {
                         </span>
                       </div>
                     </div>
-                    <div className="flex text-xs mt-4 space-x-3">
+                    <div className="flex flex-col sm:flex-row text-xs mt-4 space-y-3 sm:space-y-0 sm:space-x-3">
+                    {projectTask ? (
+                      <CommentsModal
+                        projectId={projectId}
+                        projectTaskId={task.taskId}
+                        userId={task.userId}
+                        taskType={"projectTask"}
+                        access={"addbutton"}
+                        onClick={() => setShowModal(false)}
+                      />
+                    ):(
                       <CommentsModal
                         taskId={task.taskId}
                         userId={task.userId}
@@ -302,17 +321,30 @@ export default function TaskModal({ task, projectTask, projectId }) {
                         access={"addbutton"}
                         onClick={() => setShowModal(false)}
                       />
+                    )}
+                    {projectTask ? (
+                      <CommentsModal
+                        projectId={projectId}
+                        projectTaskId={task.taskId}
+                        userId={task.userId}
+                        taskType={"projectTask"}
+                        access={"viewbutton"}
+                        onClick={() => setShowModal(false)}
+                      />
+                    ):(
                       <CommentsModal
                         taskId={task.taskId}
                         userId={task.userId}
                         taskType={"quicktask"}
                         access={"viewbutton"}
+                        onClick={() => setShowModal(false)}
                       />
+                    )}
                     </div>
                   </div>
                 </div>
                 {/*footer*/}
-                <div className="flex justify-center space-x-5 mt-36 mb-10">
+                <div className="flex flex-col items-center sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-5 mt-10 sm:mt-20 md:mt-32 mb-10">
                   <button
                     className="bg-[#004064] rounded-md text-white w-48 py-3 text-xs"
                     onClick={() => handleMarkComplete()}

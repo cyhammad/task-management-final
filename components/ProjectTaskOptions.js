@@ -15,7 +15,7 @@ import DeleteProjectTaskButton from "./DeleteProjectTaskButton";
 import Link from "next/link";
 import axios from "axios";
 
-function ProjectTaskOptions({ task, projectId }) {
+function ProjectTaskOptions({ task, projectId, openAttachment }) {
   const [showOptions, setShowOptions] = useState(false);
   const [showUpdateOptions, setShowUpdateOptions] = useState(false);
 
@@ -167,7 +167,13 @@ function ProjectTaskOptions({ task, projectId }) {
             Archive After 30 days
           </button>
         </div>
-        <button className="border-t border-white py-1 text-sm">
+        <button
+          className="border-t border-white py-1 text-sm"
+          onClick={() => {
+            openAttachment(true);
+            setShowOptions(false);
+          }}
+        >
           Attachments
         </button>
         <Link href="/chats">

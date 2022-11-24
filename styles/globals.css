@@ -58,7 +58,7 @@
 
 @layer utilities {
     .scrollbar::-webkit-scrollbar {
-      width: 14px;
+      width: 8px;
       height: 14px;
     }
   

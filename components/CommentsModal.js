@@ -5,11 +5,12 @@ import {
   ChatBubbleOvalLeftEllipsisIcon,
   PaperAirplaneIcon,
   ArrowUturnLeftIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import { HandThumbUpIcon } from "@heroicons/react/24/solid";
 import { auth, db } from "../firebase";
 import {
-    addDoc,
+  addDoc,
   collection,
   collectionGroup,
   getDocs,
@@ -23,42 +24,53 @@ import Comment from "./Comment";
 import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
 
-function CommentsModal({ userId, projectId, taskId, taskType, access }) {
+function CommentsModal({
+  userId,
+  projectId,
+  taskId,
+  projectTaskId,
+  taskType,
+  access,
+}) {
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [comments, setComments] = useState([]);
   const [commentCount, setCommentCount] = useState(0);
   const [inpComment, setInpComment] = useState("");
-  const useEffectQuery = taskType == 'quicktask' ? `users/${userId}/tasks/${taskId}/comments` : `users/${userId}/projects/${projectId}/comments`;
-  useEffect(() => onSnapshot(
-    query(collection(db, useEffectQuery), orderBy("createdAt")),
-    (snapshot) => {
-      setComments(snapshot.docs)
-      var replies = 0;
-      var comments = 0;
-      snapshot.docs.forEach((docIns)=>{
-        docIns.data().replies ? replies = docIns.data().replies : null;
-        comments = comments + 1;
-      })
-      setCommentCount(replies + comments);
-    }
-  ), [db]);
+  const useEffectQuery =
+    taskType == "quicktask"
+      ? `users/${userId}/tasks/${taskId}/comments`
+      : taskType == "projectTask"
+      ? `users/${userId}/projects/${projectId}/subtasks/${projectTaskId}/comments`
+      : `users/${userId}/projects/${projectId}/comments`;
+  useEffect(
+    () =>
+      onSnapshot(
+        query(collection(db, useEffectQuery), orderBy("createdAt")),
+        (snapshot) => {
+          setComments(snapshot.docs);
+          var replies = 0;
+          var comments = 0;
+          snapshot.docs.forEach((docIns) => {
+            docIns.data().replies ? (replies = docIns.data().replies) : null;
+            comments = comments + 1;
+          });
+          setCommentCount(replies + comments);
+        }
+      ),
+    [db]
+  );
   const addComment = async () => {
     const inpcom = inpComment;
     setInpComment("");
-    const docRef = await addDoc(
-        collection(
-            db,
-            useEffectQuery
-        ),{
-            addedBy: auth.currentUser.uid,
-            comment: inpcom,
-            createdAt: serverTimestamp(),
-            likedBy: [],
-            replies: 0,
-        }   
-    )
-    console.log("Comment added with ", docRef.id)
+    const docRef = await addDoc(collection(db, useEffectQuery), {
+      addedBy: auth.currentUser.uid,
+      comment: inpcom,
+      createdAt: serverTimestamp(),
+      likedBy: [],
+      replies: 0,
+    });
+    console.log("Comment added with ", docRef.id);
   };
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -68,39 +80,52 @@ function CommentsModal({ userId, projectId, taskId, taskType, access }) {
   return (
     <div>
       {access == "options" && (
-        <button className="border-t border-white py-1 text-sm w-full" onClick={() => setShowModal(true)}>
+        <button
+          className="border-t border-white py-1 text-sm w-full"
+          onClick={() => setShowModal(true)}
+        >
           Comments
         </button>
       )}
       {access == "addbutton" && (
-        <button className="bg-[#004064] text-white px-2 py-1 rounded" onClick={() => setShowModal(true)} >Add Comment</button>
+        <button
+          className="bg-[#004064] text-white px-2 py-1 rounded"
+          onClick={() => setShowModal(true)}
+        >
+          Add Comment
+        </button>
       )}
       {access == "viewbutton" && (
-        <button className="bg-[#D9D9D9] px-2 py-1 rounded" onClick={() => setShowModal(true)} >View Comments</button>
+        <button
+          className="bg-[#D9D9D9] px-2 py-1 rounded"
+          onClick={() => setShowModal(true)}
+        >
+          View Comments
+        </button>
       )}
       {access == "modal" && (
         <div
-        className={
-          comments.length == undefined || comments.length == 0
-            ? "hidden"
-            : "flex space-x-2 items-center cursor-pointer"
-        }
-        onClick={() => setShowModal(true)}
-      >
-        <div className=" rounded-md bg-white">
-          <Image
-            src={auth.currentUser.photoURL}
-            alt="profile"
-            height={12}
-            width={12}
-            className="h-10 cursor-pointer rounded-full"
-          />
+          className={
+            comments.length == undefined || comments.length == 0
+              ? "hidden"
+              : "flex space-x-2 items-center cursor-pointer"
+          }
+          onClick={() => setShowModal(true)}
+        >
+          <div className=" rounded-md bg-white">
+            <Image
+              src={auth.currentUser.photoURL}
+              alt="profile"
+              height={12}
+              width={12}
+              className="h-10 cursor-pointer rounded-full"
+            />
+          </div>
+          <p className="text-xs flex items-center text-gray-400 my-2">
+            {commentCount} comments
+            <ChatBubbleOvalLeftEllipsisIcon className="h-3 w-3 ml-1" />
+          </p>
         </div>
-        <p className="text-xs flex items-center text-gray-400 my-2">
-          {commentCount} comments
-          <ChatBubbleOvalLeftEllipsisIcon className="h-3 w-3 ml-1" />
-        </p>
-      </div>
       )}
       {showModal ? (
         <>
@@ -119,6 +144,19 @@ function CommentsModal({ userId, projectId, taskId, taskType, access }) {
                         width={50}
                         className="h-10 cursor-pointer rounded-full"
                       />
+                      {auth.currentUser.photoURL !== "" ? (
+                        <Image
+                          src={auth.currentUser.photoURL}
+                          alt="profile"
+                          height={40}
+                          width={40}
+                          className="h-10 cursor-pointer rounded-full"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 bg-blue-50 rounded-full flex justify-center items-center cursor-pointer">
+                          <UserIcon className="h-6 w-6 text-blue-500" />
+                        </div>
+                      )}
                     </div>
                     <div className="px-5 py-4 grow border border-blue-200 rounded-md flex mx-2 bg-white text-black">
                       <input
@@ -145,7 +183,15 @@ function CommentsModal({ userId, projectId, taskId, taskType, access }) {
                 {/*body*/}
                 <div className="overflow-auto scrollbar max-h-[60vh] min-h-[450px]">
                   {comments.map((comment) => (
-                    <Comment comment={comment.data()} key={comment.id} taskId={taskId} commentId={comment.id} />
+                    <Comment
+                      comment={comment.data()}
+                      key={comment.id}
+                      taskId={taskId}
+                      projectId={projectId}
+                      projectTaskId={projectTaskId}
+                      taskType={taskType}
+                      commentId={comment.id}
+                    />
                   ))}
                 </div>
                 <div className="mb-10"></div>

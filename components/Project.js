@@ -75,7 +75,7 @@ function Project(props) {
               {props.priority != null ? props.priority : "Low"}
             </span>
           </div>
-          <div className="text-gray-400 pb-4">{props.desc}</div>
+          <div className="text-gray-400 pb-4 break-words">{props.desc.slice(0, 100)}{props.desc.length > 100 ? " ...": null}</div>
           <CommentsModal
             projectId={props.projectId}
             userId={props.userId}

@@ -6,13 +6,7 @@ import { db, auth } from "../firebase";
 function DeleteUserModal({ selectedUsers, multiple }) {
   const [showModal, setShowModal] = useState(false);
   const deleteUser = async (id) => {
-    console.log("delete user", id);
-    await deleteDoc(doc(db, "users", id));
-    await deleteDoc(
-      doc(db, `users/${auth.currentUser.uid}/chats`, id + "-chat")
-    );
-    // delete subcollections from firestore
-    
+    const response = await fetch(`/api/users/${id}`, {method: "DELETE"});
     window.location.reload(false);
   };
   const handleDelete = async () => {

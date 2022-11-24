@@ -33,8 +33,7 @@ function User({
       });
     }
   }
-    
-  console.log("ls:", printDate);
+
   return (
     <>
       {selected ? (

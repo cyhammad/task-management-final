@@ -1,13 +1,13 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import Header from '../components/Header'
-import SubNavBar from '../components/SubNavBar'
+import Header from '../../components/Header'
+import SubNavBar from '../../components/SubNavBar'
 import { faker } from "@faker-js/faker";
-import OpenedMessage from '../components/OpenedMessage'
-import Chat from '../components/Chat'
+import OpenedMessage from '../../components/OpenedMessage'
+import Chat from '../../components/Chat'
 import { collection, collectionGroup, doc, getDoc, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { auth, db } from '../firebase';
-import StartChatModal from '../components/StartChatModal';
+import { auth, db } from '../../firebase';
+import StartChatModal from '../../components/StartChatModal';
 import { useEffect, useState } from 'react';
 
 function Chats() {
