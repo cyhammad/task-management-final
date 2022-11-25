@@ -256,8 +256,8 @@ function OpenedMessage({ chatDetails }) {
                       />
                     </div>
                   ) : null}
-                  <div className="flex items-end justify-between">
-                    <div className="px-2">{msg.data().message}</div>
+                  <div className="flex items-end justify-between w-full">
+                    <div className="px-2 w-[90%] break-words">{msg.data().message}</div>
                     <div className="text-xs text-end min-w-fit">
                       {printDate(msg.data().timeSent)}
                     </div>

@@ -45,7 +45,7 @@ function ProjectTaskOptions({ task, projectId, openAttachment, right }) {
     await addDoc(collection(db, `users/${task.userId}/notifications`), {
       isSeen: false,
       title: `Status Updated`,
-      body: 'Admin changed the status of your project task',
+      body: `Admin changed the status of your ${task.title} to ${status}`,
       sentBy: auth.currentUser.uid,
       createdAt: serverTimestamp(),
     });

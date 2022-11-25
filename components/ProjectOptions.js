@@ -19,6 +19,15 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
   const [viewAttachment, setViewAttachment] = useState(false);
   const router = useRouter();
   const [receiver, setReceiver] = useState(null);
+  const [currentProject, setCurrentProject] = useState(null);
+
+  useEffect(()=>{
+    const userDoc = getDoc(doc(db, `users/${userId}/projects/`, projectId)).then(
+      (docSnap) => {
+        setCurrentProject(docSnap.data());
+      }
+    );
+  }, [projectId, userId])
 
   useEffect(() => {
     const userDoc = getDoc(doc(db, "users", userId)).then(
@@ -52,7 +61,7 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
     var data = JSON.stringify({
       "to": receiver.token,
       "notification": {
-        "body": 'Admin changed the status of your project',
+        "body": `Admin changed the status of ${currentProject.title} to ${status}`,
         "title": "Status Updated"
       }
     });

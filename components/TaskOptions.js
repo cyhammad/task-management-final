@@ -43,7 +43,7 @@ function TaskOptions({ task, openModel, openAttachment, right }) {
     var data = JSON.stringify({
       "to": receiver.token,
       "notification": {
-        "body": 'Admin changed the status of your quick task',
+        "body": `Admin changed the status of ${task.title} to ${status}`,
         "title": "Status Updated"
       }
     });
