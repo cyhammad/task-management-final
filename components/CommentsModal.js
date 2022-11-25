@@ -55,7 +55,8 @@ function CommentsModal({
             docIns.data().replies ? replies = replies + (replies = docIns.data().replies) : null;
             comments = comments + 1;
           });
-          setCommentCount(replies + comments);
+          // setCommentCount(replies + comments);
+          setCommentCount(comments);
         }
       ),
     [db]
