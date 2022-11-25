@@ -98,6 +98,7 @@ function OpenedMessage({ chatDetails }) {
             ),
             {
               image: downloadURL,
+              message: downloadURL,
             }
           );
           setImgLink(downloadURL);
@@ -180,7 +181,7 @@ function OpenedMessage({ chatDetails }) {
   const linkify = (text) => {
     var urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
     return text.replace(urlRegex, function(url) {
-      return '<a href="' + url + '" class="text-blue-500 hover:underline">' + url + "</a>";
+      return '<a href="' + url + '" class="text-blue-500 hover:underline" target="_blank">' + url + "</a>";
     });
   }
   return (
@@ -256,6 +257,8 @@ function OpenedMessage({ chatDetails }) {
                       <Image
                         src={msg.data().image}
                         alt="profile"
+                        placeholder="blur"
+                        blurDataURL="https://firebasestorage.googleapis.com/v0/b/taskmanagement-a5d8a.appspot.com/o/chatImages%2FHFrnXt6R05Pg3cnuhu5Z%2Fimage?alt=media&token=2bc9d319-a4a7-4334-9506-09015088515e"
                         height={250}
                         width={250}
                         className="h-10 cursor-pointer"
