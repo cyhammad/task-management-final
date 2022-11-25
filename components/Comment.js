@@ -19,6 +19,7 @@ import {
 import { auth, db } from "../firebase";
 import Image from "next/image";
 import Reply from "./Reply";
+import axios from "axios";
 
 function Comment({
   key,
@@ -34,6 +35,14 @@ function Comment({
   const [showReplyField, setShowReplyField] = useState(false);
   const [replies, setReplies] = useState([]);
   const [replyInput, setReplyInput] = useState("");
+  const [recipient, setRecepient] = useState("");
+  useEffect(()=>{
+    const userDoc = getDoc(doc(db, "users", userId)).then(
+      (docSnap) => {
+        setRecepient(docSnap.data());
+      }
+    );
+  },[userId])
   const replyQuery =
     taskType == "quicktask"
       ? `users/${userId}/tasks/${taskId}/comments/${commentId}/replies`
@@ -77,6 +86,29 @@ function Comment({
       }
     );
     console.log("Reply added with ", docRef.id);
+    var data = JSON.stringify({
+      "to": recipient.token,
+      "notification": {
+        "body": inprep,
+        "title": "Admin added a new reply"
+      }
+    });
+    var config = {
+      method: 'post',
+      url: 'https://fcm.googleapis.com/fcm/send',
+      headers: { 
+        'Authorization': 'Bearer AAAA7j_APoE:APA91bHYEq6k0otSNNtsrEvIaek_yNalzbo8ZGNN0QAe887_Xh8UV3FJdGCtOSTe2_u-OKal23aCyWJgcOHA7NGKYsnF3hC1zHbuiQ4HM5hmlNB8mgHAu4YDJ-p5uftZx4AyeTkZzXGa', 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
   };
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {

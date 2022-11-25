@@ -13,6 +13,8 @@ import {
   addDoc,
   collection,
   collectionGroup,
+  doc,
+  getDoc,
   getDocs,
   limit,
   onSnapshot,
@@ -23,6 +25,7 @@ import {
 import Comment from "./Comment";
 import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
+import axios from "axios";
 
 function CommentsModal({
   userId,
@@ -37,6 +40,14 @@ function CommentsModal({
   const [comments, setComments] = useState([]);
   const [commentCount, setCommentCount] = useState(0);
   const [inpComment, setInpComment] = useState("");
+  const [recipient, setRecepient] = useState("");
+  useEffect(()=>{
+    const userDoc = getDoc(doc(db, "users", userId)).then(
+      (docSnap) => {
+        setRecepient(docSnap.data());
+      }
+    );
+  },[userId])
   const useEffectQuery =
     taskType == "quicktask"
       ? `users/${userId}/tasks/${taskId}/comments`
@@ -72,6 +83,29 @@ function CommentsModal({
       replies: 0,
     });
     console.log("Comment added with ", docRef.id);
+    var data = JSON.stringify({
+      "to": recipient.token,
+      "notification": {
+        "body": inpcom,
+        "title": "Admin added a new comment",
+      }
+    });
+    var config = {
+      method: 'post',
+      url: 'https://fcm.googleapis.com/fcm/send',
+      headers: { 
+        'Authorization': 'Bearer AAAA7j_APoE:APA91bHYEq6k0otSNNtsrEvIaek_yNalzbo8ZGNN0QAe887_Xh8UV3FJdGCtOSTe2_u-OKal23aCyWJgcOHA7NGKYsnF3hC1zHbuiQ4HM5hmlNB8mgHAu4YDJ-p5uftZx4AyeTkZzXGa', 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
   };
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
