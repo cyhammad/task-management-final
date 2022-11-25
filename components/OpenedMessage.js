@@ -177,6 +177,12 @@ function OpenedMessage({ chatDetails }) {
           hour12: true,
         });
   };
+  const linkify = (text) => {
+    var urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
+    return text.replace(urlRegex, function(url) {
+      return '<a href="' + url + '" class="text-blue-500 hover:underline">' + url + "</a>";
+    });
+  }
   return (
     <div className="flex flex-col justify-end h-full mx-5">
       <div
@@ -257,7 +263,7 @@ function OpenedMessage({ chatDetails }) {
                     </div>
                   ) : null}
                   <div className="flex items-end justify-between w-full">
-                    <div className="px-2 w-[90%] break-words">{msg.data().message}</div>
+                    <div className="px-2 w-[90%] break-words" dangerouslySetInnerHTML={{__html: linkify(msg.data().message)}} ></div>
                     <div className="text-xs text-end min-w-fit">
                       {printDate(msg.data().timeSent)}
                     </div>

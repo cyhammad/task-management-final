@@ -1,7 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { PaperClipIcon, PlusIcon, UserIcon } from "@heroicons/react/24/outline";
-import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
-import { db, storage } from "../firebase";
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
+import { auth, db, storage } from "../firebase";
 import TaskOptions from "./TaskOptions";
 import CommentsModal from "./CommentsModal";
 import Image from "next/image";
@@ -51,7 +59,9 @@ export default function TaskModal({ task, projectTask, projectId }) {
     }
   }, [task]);
   const handleMarkComplete = async () => {
-    const markQuery = !projectTask ? `users/${task.userId}/tasks` : `users/${task.userId}/projects/${projectId}/subtasks`;
+    const markQuery = !projectTask
+      ? `users/${task.userId}/tasks`
+      : `users/${task.userId}/projects/${projectId}/subtasks`;
     const docRef = doc(db, markQuery, task.taskId);
     updateDoc(docRef, {
       status: "completed",
@@ -60,53 +70,68 @@ export default function TaskModal({ task, projectTask, projectId }) {
       setShowModal(false);
     });
   };
-  const addFileToAttach = async(e) => {
+  const addFileToAttach = async (e) => {
     const reader = new FileReader();
     if (e.target.files[0]) {
       reader.readAsDataURL(e.target.files[0]);
     }
     reader.onload = (readerEvent) => {
       setSelectedFile(readerEvent.target.result);
-      setFilename(e.target.files[0].name)
+      setFilename(e.target.files[0].name);
     };
-  }
-  const sendFile = async() => {
-    console.log("SELECTED FILE",selectedFile)
+  };
+  const sendFile = async () => {
+    console.log("SELECTED FILE", selectedFile);
     setLoading(true);
     const fileRef = ref(storage, `tasks/${task.taskId}/${filename}`);
     console.log("Sending attachment.", fileRef, selectedFile);
+
     await uploadString(fileRef, selectedFile, "data_url").then(
       async (snapshot) => {
         const downloadURL = await getDownloadURL(fileRef);
-        if (projectTask){
-          await updateDoc(
-            doc(
-              db,
-              `users/${task.userId}/projects/${projectId}/subtasks`,
-              task.taskId
-            ),
-            {
-              files: arrayUnion({fileUrl: downloadURL, fileName: filename}),
-            }
-          );
-        }else{
-          await updateDoc(
-            doc(
-              db,
-              `users/${task.userId}/tasks`,
-              task.taskId
-            ),
-            {
-              files: arrayUnion({fileUrl: downloadURL, fileName: filename}),
-            }
-          );
-        }
+
+        const docRef = await addDoc(
+          collection(
+            db,
+            `users/${auth.currentUser.uid}/chats/${task.userId}-chat/messages`
+          ),
+          {
+            message: downloadURL,
+            from: auth.currentUser.uid,
+            to: task.userId,
+            timeSent: serverTimestamp(),
+            isSeen: false,
+          }
+        );
+        // if (projectTask){
+        //   await updateDoc(
+        //     doc(
+        //       db,
+        //       `users/${task.userId}/projects/${projectId}/subtasks`,
+        //       task.taskId
+        //     ),
+        //     {
+        //       files: arrayUnion({fileUrl: downloadURL, fileName: filename}),
+        //     }
+        //   );
+        // }else{
+        //   await updateDoc(
+        //     doc(
+        //       db,
+        //       `users/${task.userId}/tasks`,
+        //       task.taskId
+        //     ),
+        //     {
+        //       files: arrayUnion({fileUrl: downloadURL, fileName: filename}),
+        //     }
+        //   );
+        // }
       }
     );
     setSelectedFile(null);
     setLoading(false);
     setSendFileModal(false);
-  }
+  };
   return (
     <>
       <div
@@ -130,7 +155,7 @@ export default function TaskModal({ task, projectTask, projectId }) {
             )}
           </div>
           <h1 className="break-words w-[65%]">
-            {task.title.slice(0, 15 )}
+            {task.title.slice(0, 15)}
             {task.title.length > 15 ? " . . ." : null}
           </h1>
         </div>
@@ -154,7 +179,8 @@ export default function TaskModal({ task, projectTask, projectId }) {
         className="text-gray-400 pb-4 cursor-pointer break-words w-full"
         onClick={() => setShowModal(true)}
       >
-        {task.description.slice(0, 100)}{task.description.length > 100 ? " ...": null}
+        {task.description.slice(0, 100)}
+        {task.description.length > 100 ? " ..." : null}
       </div>
       {projectTask ? (
         <CommentsModal
@@ -164,7 +190,7 @@ export default function TaskModal({ task, projectTask, projectId }) {
           taskType={"projectTask"}
           access={"modal"}
         />
-      ):(
+      ) : (
         <CommentsModal
           taskId={task.taskId}
           userId={task.userId}
@@ -207,7 +233,6 @@ export default function TaskModal({ task, projectTask, projectId }) {
           right={
             task.status == undefined || task.status == "new" ? false : true
           }
-          
         />
       ) : (
         <TaskOptions
@@ -248,7 +273,13 @@ export default function TaskModal({ task, projectTask, projectId }) {
                       >
                         View Attachments
                       </span>
-                      <PaperClipIcon className="h-5 w-5 text-gray-500" />
+                      <PaperClipIcon
+                        className="h-5 w-5 text-gray-500 cursor-pointer"
+                        onClick={() => {
+                          setShowModal(false);
+                          setViewAttachment(true);
+                        }}
+                      />
                     </div>
                   </div>
                   <button
@@ -278,9 +309,11 @@ export default function TaskModal({ task, projectTask, projectId }) {
                   <div className="w-full">
                     <div className="pt-5 w-[80%]">
                       <div className="mb-8 w-full">
-                        <h1 className="font-medium text-lg break-words">{task.title}</h1>
+                        <h1 className="font-medium text-lg break-words">
+                          {task.title}
+                        </h1>
                         <p className="text-sm text-gray-500 pt-1 break-words">
-                          {task.description.slice(0,24)}
+                          {task.description.slice(0, 24)}
                         </p>
                       </div>
                       <p className="font-medium text-sm">Description</p>
@@ -307,42 +340,42 @@ export default function TaskModal({ task, projectTask, projectId }) {
                       </div>
                     </div>
                     <div className="flex flex-col sm:flex-row text-xs mt-4 space-y-3 sm:space-y-0 sm:space-x-3">
-                    {projectTask ? (
-                      <CommentsModal
-                        projectId={projectId}
-                        projectTaskId={task.taskId}
-                        userId={task.userId}
-                        taskType={"projectTask"}
-                        access={"addbutton"}
-                        onClick={() => setShowModal(false)}
-                      />
-                    ):(
-                      <CommentsModal
-                        taskId={task.taskId}
-                        userId={task.userId}
-                        taskType={"quicktask"}
-                        access={"addbutton"}
-                        onClick={() => setShowModal(false)}
-                      />
-                    )}
-                    {projectTask ? (
-                      <CommentsModal
-                        projectId={projectId}
-                        projectTaskId={task.taskId}
-                        userId={task.userId}
-                        taskType={"projectTask"}
-                        access={"viewbutton"}
-                        onClick={() => setShowModal(false)}
-                      />
-                    ):(
-                      <CommentsModal
-                        taskId={task.taskId}
-                        userId={task.userId}
-                        taskType={"quicktask"}
-                        access={"viewbutton"}
-                        onClick={() => setShowModal(false)}
-                      />
-                    )}
+                      {projectTask ? (
+                        <CommentsModal
+                          projectId={projectId}
+                          projectTaskId={task.taskId}
+                          userId={task.userId}
+                          taskType={"projectTask"}
+                          access={"addbutton"}
+                          onClick={() => setShowModal(false)}
+                        />
+                      ) : (
+                        <CommentsModal
+                          taskId={task.taskId}
+                          userId={task.userId}
+                          taskType={"quicktask"}
+                          access={"addbutton"}
+                          onClick={() => setShowModal(false)}
+                        />
+                      )}
+                      {projectTask ? (
+                        <CommentsModal
+                          projectId={projectId}
+                          projectTaskId={task.taskId}
+                          userId={task.userId}
+                          taskType={"projectTask"}
+                          access={"viewbutton"}
+                          onClick={() => setShowModal(false)}
+                        />
+                      ) : (
+                        <CommentsModal
+                          taskId={task.taskId}
+                          userId={task.userId}
+                          taskType={"quicktask"}
+                          access={"viewbutton"}
+                          onClick={() => setShowModal(false)}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -360,7 +393,12 @@ export default function TaskModal({ task, projectTask, projectId }) {
                   >
                     Send Files
                   </button>
-                  <input ref={filePickerRef} onChange={addFileToAttach} type="file" hidden />
+                  <input
+                    ref={filePickerRef}
+                    onChange={addFileToAttach}
+                    type="file"
+                    hidden
+                  />
                 </div>
               </div>
             </div>
@@ -450,13 +488,13 @@ export default function TaskModal({ task, projectTask, projectId }) {
                 <div className="flex justify-center items-center pt-8">
                   {selectedFile ? (
                     <div className="bg-blue-50 p-8 flex justify-center items-center rounded-xl">
-                    <div
-                      onClick={() => filePickerRef.current.click()}
-                      className="bg-[#004064] flex justify-center items-center text-white px-2 py-2 rounded-lg cursor-pointer"
-                    >
-                      <DocumentTextIcon className="h-6 w-6" />
+                      <div
+                        onClick={() => filePickerRef.current.click()}
+                        className="bg-[#004064] flex justify-center items-center text-white px-2 py-2 rounded-lg cursor-pointer"
+                      >
+                        <DocumentTextIcon className="h-6 w-6" />
+                      </div>
                     </div>
-                  </div>
                   ) : (
                     <div className="bg-blue-50 p-8 flex justify-center items-center rounded-xl">
                       <div
@@ -482,9 +520,9 @@ export default function TaskModal({ task, projectTask, projectId }) {
                   <button
                     className="bg-[#004064] rounded-md text-white w-48 py-3 text-xs"
                     onClick={sendFile}
-                    disabled= {!selectedFile}
+                    disabled={!selectedFile}
                   >
-                    {loading? "Adding File...": "Add File"}
+                    {loading ? "Adding File..." : "Add File"}
                   </button>
                 </div>
               </div>
