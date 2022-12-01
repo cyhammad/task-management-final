@@ -221,9 +221,9 @@ function OpenedMessage({ recipientId }) {
         className="flex items-center shadow-b-md"
         style={{ boxShadow: "0px 3px 0px #f0f0f0" }}
       >
-        {recipient.profilePic !== "" ? (
+        {recipient?.profilePic !== "" ? (
           <Image
-            src={recipient.profilePic}
+            src={recipient?.profilePic}
             alt="profile"
             height={40}
             width={40}

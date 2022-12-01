@@ -48,7 +48,7 @@ function Chat({ chatDetails, userPassed }) {
       hour12: true,
     });
   return (
-    <div onClick={()=>router.push(`/chats/${chatDetails.with}`)}>
+    <div onClick={()=>router.push(userPassed ? `/chats/${chatDetails.uid}`: `/chats/${chatDetails.with}`)}>
       <div className="bg-white px-4 py-4 flex space-x-3 hover:bg-[#F3F3F3] cursor-pointer">
         <div className=" rounded-md bg-white">
           {sender != null ? (
