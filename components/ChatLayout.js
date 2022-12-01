@@ -1,4 +1,10 @@
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 import Chat from "./Chat";
@@ -10,7 +16,10 @@ function ChatLayout() {
   useEffect(
     () =>
       onSnapshot(
-        query(collection(db, "users"), orderBy("name")),
+        query(
+          collection(db, "users"),
+          where("uid", "!=", auth.currentUser.uid)
+        ),
         (snapshot) => {
           setUsers(snapshot.docs);
         }
@@ -30,7 +39,7 @@ function ChatLayout() {
   return (
     <div className="bg-[#F4F5F8] py-5 px-3 rounded-lg lg:block min-h-[70vh]">
       <div className="flex justify-between items-center font-medium mb-3">
-        <p>All Messages</p>
+        <p>{viewAll ? "All Users":"All Messages"}</p>
         <p
           className="text-xs cursor-pointer"
           onClick={() => setViewAll(!viewAll)}
@@ -39,19 +48,35 @@ function ChatLayout() {
         </p>
       </div>
       <div className="rounded-lg h-[60vh] overflow-y-auto scrollbar">
-        {viewAll == true
-          ? users.map((user) => {
-              return (
-                <Chat
-                  chatDetails={user.data()}
-                  userPassed={true}
-                  key={user.id}
-                />
-              );
-            })
-          : chatters.map((chat) => {
-              return <Chat chatDetails={chat.data()} key={chat.id} />;
-            })}
+        {viewAll == true ? (
+          <>
+            {users.length > 0 ? (
+              users.map((user) => {
+                return (
+                  <Chat
+                    chatDetails={user.data()}
+                    userPassed={true}
+                    key={user.id}
+                  />
+                );
+              })
+            ) : (
+              <p className="text-center text-gray-500">No Users Created</p>
+            )}
+          </>
+        ) : (
+          <>
+            {chatters.length > 0 ? (
+              chatters.map((chat) => {
+                return <Chat chatDetails={chat.data()} key={chat.id} />;
+              })
+            ): (
+              <p className="text-center text-gray-500">No Messages</p>
+            )}
+          </>
+        )}
+
+
       </div>
     </div>
   );

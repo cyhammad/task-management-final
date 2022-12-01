@@ -22,6 +22,7 @@ import Image from "next/image";
 import { useAuth } from "../context/AuthContext";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import axios from "axios";
+import ImageModal from "./ImageModal";
 
 function OpenedMessage({ recipientId }) {
   const [message, setMessage] = useState("");
@@ -77,6 +78,9 @@ function OpenedMessage({ recipientId }) {
       ),
       {
         message: msg,
+        image: "",
+        file: "",
+        fileName: "",
         from: auth.currentUser.uid,
         to: recipientId,
         timeSent: serverTimestamp(),
@@ -86,7 +90,7 @@ function OpenedMessage({ recipientId }) {
     console.log("CHATID: ", docRef.id);
     if (selectedFile) {
       console.log("SELECTed file type", fileType);
-      if (fileType.split("/")[0] === "image") {
+      if (fileType === "jpg" || fileType === "png" || fileType === "jpeg" || fileType === "gif" || fileType === "webp" || fileType === "PNG" || fileType === "JPG" || fileType === "JPEG" || fileType === "GIF" || fileType === "WEBP") {
         const imageRef = ref(storage, `chatImages/${fileName}`);
         await uploadString(imageRef, selectedFile, "data_url").then(
           async (snapshot) => {
@@ -281,20 +285,10 @@ function OpenedMessage({ recipientId }) {
                       : "rounded-tr-none bg-[#F3F3F3]"
                   }`}
                 >
-                  {msg.data().image ? (
-                    <div className="bg-gray-200 rounded flex justify-center w-fit items-center mt-2 p-3 mb-2">
-                      <Image
-                        src={msg.data().image}
-                        alt="profile"
-                        placeholder="blur"
-                        blurDataURL="https://firebasestorage.googleapis.com/v0/b/taskmanagement-a5d8a.appspot.com/o/chatImages%2FHFrnXt6R05Pg3cnuhu5Z%2Fimage?alt=media&token=2bc9d319-a4a7-4334-9506-09015088515e"
-                        height={250}
-                        width={250}
-                        className="h-10 cursor-pointer"
-                      />
-                    </div>
+                  {msg.data().image != "" ? (
+                    <ImageModal msg={msg} />
                   ) : null}
-                  {msg.data().file ? (
+                  {msg.data().file != "" ? (
                     <a
                       href={msg.data().file}
                       target="_blank"
