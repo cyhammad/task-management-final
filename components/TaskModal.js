@@ -520,11 +520,11 @@ export default function TaskModal({ task, projectTask, projectId }) {
                 {/*footer*/}
                 <div className="flex flex-col justify-center items-center space-y-5 mt-10 mb-10 px-10">
                   <button
-                    className="bg-[#004064] rounded-md text-white w-48 py-3 text-xs"
+                    className="bg-[#004064] disabled:bg-gray-500 rounded-md text-white w-48 py-3 text-xs"
                     onClick={sendFile}
                     disabled={!selectedFile}
                   >
-                    {loading ? "Adding File..." : "Add File"}
+                    {loading ? "Sending File..." : "Send File in Chat"}
                   </button>
                 </div>
               </div>

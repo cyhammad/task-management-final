@@ -197,7 +197,7 @@ function ProjectOptions({ projectId, userId, taskNumber, right, files }) {
             setShowUpdateOptions(false);
           }}
         />
-        <Link href="/chats">
+        <Link href={`/chats/${currentProject?.userId}`}>
           <button className="border-t border-white py-1 text-sm">Chat</button>
         </Link>
         <DeleteProjectButton projectId={projectId} userId={userId} />

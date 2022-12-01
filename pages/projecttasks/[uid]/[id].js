@@ -47,7 +47,7 @@ function ProjectTask() {
   useEffect(
     () =>
       onSnapshot(
-        query(collection(db, `users/${uid}/projects/${id}/subtasks`)),
+        query(collection(db, `users/${uid}/projects/${id}/subtasks`), orderBy("createdDateTime")),
         (snapshot) => {
           setTaskList(snapshot.docs);
         }

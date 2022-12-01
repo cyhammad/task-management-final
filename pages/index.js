@@ -40,7 +40,7 @@ export default function Home() {
   const [pending3rdPartyTaskCount, setPending3rdPartyTaskCount] = useState(3);
   useEffect(
     () =>
-      onSnapshot(query(collectionGroup(db, "projects")), (snapshot) => {
+      onSnapshot(query(collectionGroup(db, "projects"), orderBy("createdDateTime")), (snapshot) => {
         setTaskList(snapshot.docs);
       }),
     [db]

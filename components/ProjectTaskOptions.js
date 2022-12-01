@@ -176,7 +176,7 @@ function ProjectTaskOptions({ task, projectId, openAttachment, right }) {
         >
           Attachments
         </button>
-        <Link href="/chats">
+        <Link href={`/chats/${task.userId}`}>
           <button className="border-t border-white py-1 text-sm">Chat</button>
         </Link>
         <DeleteProjectTaskButton projectId={projectId} task={task} />

@@ -43,7 +43,7 @@ function QuickTasks() {
 
   useEffect(
     () =>
-      onSnapshot(query(collectionGroup(db, "tasks")), (snapshot) => {
+      onSnapshot(query(collectionGroup(db, "tasks"), orderBy("createdDateTime")), (snapshot) => {
         setTasks(snapshot.docs);
       }),
     [db]

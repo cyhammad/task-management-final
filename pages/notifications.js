@@ -31,7 +31,6 @@ function Notifications() {
       ),
     [db]
   );
-  console.log("Notificaitons:", notifList);
   return (
     <div className="bg-default">
       <Head>
