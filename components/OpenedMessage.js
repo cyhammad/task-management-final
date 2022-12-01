@@ -327,15 +327,18 @@ function OpenedMessage({ recipientId }) {
         })}
       </div>
       <div className="mt-5 px-5 py-6 border border-gray-200 rounded-md flex bg-white">
-        {selectedFile ? <p>File Selected</p> : null}
-        <input
-          type="text"
-          className="bg-inherit w-full focus:outline-none"
-          placeholder="Type Message ..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
+        {selectedFile ? (
+          <div className="flex-1 flex"><FolderArrowDownIcon className="h-5 w-5 mr-3" /> {fileName}</div>
+        ) : (
+          <input
+            type="text"
+            className="bg-inherit w-full focus:outline-none"
+            placeholder="Type Message ..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        )}
         <PaperClipIcon
           className="h-7 w-7 mr-3 text-gray-500 hover:text-black cursor-pointer"
           onClick={() => filePickerRef.current.click()}
@@ -343,7 +346,7 @@ function OpenedMessage({ recipientId }) {
         <input ref={filePickerRef} onChange={addFileToMsg} type="file" hidden />
         <PaperAirplaneIcon
           className="h-7 w-7 mr-3 text-gray-500 hover:text-black cursor-pointer"
-          onClick={() => sendMessage()}
+          onClick={message == "" && !selectedFile ? null : () => sendMessage()}
         />
       </div>
     </div>
