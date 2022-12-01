@@ -1,19 +1,26 @@
 import { UserIcon } from "@heroicons/react/24/solid";
 import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 
-function Chat({ chatDetails, onClick }) {
+function Chat({ chatDetails, userPassed }) {
   const [sender, setSender] = useState(null);
   const [unread, setUnread] = useState(0);
+  const router = useRouter();
   useEffect(() => {
-    const userDoc = getDoc(doc(db, "users", chatDetails.with)).then(
-      (docSnap) => {
-        setSender(docSnap.data());
-      }
-    );
-  }, [chatDetails]);
+    if (userPassed){
+      setSender(chatDetails);
+    }
+    else{
+      const userDoc = getDoc(doc(db, "users", chatDetails.with)).then(
+        (docSnap) => {
+          setSender(docSnap.data());
+        }
+      );
+    }
+  }, [chatDetails, userPassed]);
   useEffect(
     () =>
       onSnapshot(
@@ -41,7 +48,7 @@ function Chat({ chatDetails, onClick }) {
       hour12: true,
     });
   return (
-    <div onClick={onClick}>
+    <div onClick={()=>router.push(`/chats/${chatDetails.with}`)}>
       <div className="bg-white px-4 py-4 flex space-x-3 hover:bg-[#F3F3F3] cursor-pointer">
         <div className=" rounded-md bg-white">
           {sender != null ? (

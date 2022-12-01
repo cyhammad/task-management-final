@@ -34,7 +34,10 @@ function CommentsModal({
   projectTaskId,
   taskType,
   access,
+  projectName,
+  taskName,
 }) {
+  console.log("PN",projectName)
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [comments, setComments] = useState([]);
@@ -87,7 +90,7 @@ function CommentsModal({
       "to": recipient.token,
       "notification": {
         "body": inpcom,
-        "title": "Admin added a new comment",
+        "title": `Admin added a new comment on ${taskType == "quicktask"} ${taskType == "quicktask" || taskType == "projectTask" ? taskName : projectName}`,
       }
     });
     var config = {
@@ -112,7 +115,6 @@ function CommentsModal({
       addComment();
     }
   };
-  console.log("CCCC", comments)
   return (
     <div>
       {access == "options" && (

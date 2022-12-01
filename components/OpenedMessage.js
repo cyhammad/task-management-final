@@ -22,8 +22,7 @@ import { useAuth } from "../context/AuthContext";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import axios from "axios";
 
-function OpenedMessage({ chatDetails }) {
-  const { user } = useAuth();
+function OpenedMessage({ recipientId }) {
   const [message, setMessage] = useState("");
   const [recipient, setRecepient] = useState([]);
   const [chatList, setChatList] = useState([]);
@@ -32,19 +31,19 @@ function OpenedMessage({ chatDetails }) {
   const filePickerRef = useRef(null);
 
   useEffect(() => {
-    const userDoc = getDoc(doc(db, "users", chatDetails.with)).then(
+    const userDoc = getDoc(doc(db, "users", recipientId)).then(
       (docSnap) => {
         setRecepient(docSnap.data());
       }
     );
-  }, [chatDetails]);
+  }, [recipientId]);
   useEffect(
     () =>
       onSnapshot(
         query(
           collection(
             db,
-            `users/${auth.currentUser.uid}/chats/${chatDetails.with}-chat/messages`
+            `users/${auth.currentUser.uid}/chats/${recipientId}-chat/messages`
           ),
           orderBy("timeSent")
         ),
@@ -54,7 +53,7 @@ function OpenedMessage({ chatDetails }) {
             updateDoc(
               doc(
                 db,
-                `users/${auth.currentUser.uid}/chats/${chatDetails.with}-chat/messages/`,
+                `users/${auth.currentUser.uid}/chats/${recipientId}-chat/messages/`,
                 docIns.id
               ),
               {
@@ -64,7 +63,7 @@ function OpenedMessage({ chatDetails }) {
           });
         }
       ),
-    [chatDetails]
+    [recipientId]
   );
   const sendMessage = async () => {
     const msg = message;
@@ -73,12 +72,12 @@ function OpenedMessage({ chatDetails }) {
     const docRef = await addDoc(
       collection(
         db,
-        `users/${auth.currentUser.uid}/chats/${chatDetails.with}-chat/messages`
+        `users/${auth.currentUser.uid}/chats/${recipientId}-chat/messages`
       ),
       {
         message: msg,
         from: auth.currentUser.uid,
-        to: chatDetails.with,
+        to: recipientId,
         timeSent: serverTimestamp(),
         isSeen: false,
       }
@@ -93,7 +92,7 @@ function OpenedMessage({ chatDetails }) {
           await updateDoc(
             doc(
               db,
-              `users/${auth.currentUser.uid}/chats/${chatDetails.with}-chat/messages`,
+              `users/${auth.currentUser.uid}/chats/${recipientId}-chat/messages`,
               docRef.id
             ),
             {
@@ -110,17 +109,17 @@ function OpenedMessage({ chatDetails }) {
       doc(
         db,
         `users/${auth.currentUser.uid}/chats`,
-        `${chatDetails.with}-chat`
+        `${recipientId}-chat`
       ),
       {
         isSeen: false,
         recentMessage: msg,
         image: imgLink,
         timeSent: serverTimestamp(),
-        with: chatDetails.with,
+        with: recipientId,
       }
     );
-    await addDoc(collection(db, `users/${chatDetails.with}/notifications`), {
+    await addDoc(collection(db, `users/${recipientId}/notifications`), {
       isSeen: false,
       title: `New Message from ${auth.currentUser.displayName}`,
       body: msg,
@@ -211,11 +210,11 @@ function OpenedMessage({ chatDetails }) {
             <>
               <div
                 className={`flex  my-1 ${
-                  msg.data().from == chatDetails.with ? "" : "flex-row-reverse"
+                  msg.data().from == recipientId ? "" : "flex-row-reverse"
                 }`}
               >
                 <div className="relative cursor-pointer">
-                  {msg.data().from == chatDetails.with ? (
+                  {msg.data().from == recipientId ? (
                     recipient.profilePic !== "" ? (
                       <Image
                         src={recipient.profilePic}

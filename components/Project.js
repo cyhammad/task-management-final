@@ -81,6 +81,7 @@ function Project(props) {
             userId={props.userId}
             taskType={"project"}
             access={"modal"}
+            projectName={props.name}
           />
           <div
             className={

@@ -174,7 +174,7 @@ function TaskOptions({ task, openModel, openAttachment, right }) {
           taskType={"quicktask"}
           access={"options"}
         />
-        <Link href="/chats">
+        <Link href={`/chats/${task.userId}`}>
           <button className="border-t border-white py-1 text-sm">Chat</button>
         </Link>
         <DeleteTaskButton task={task} />

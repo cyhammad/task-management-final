@@ -189,6 +189,7 @@ export default function TaskModal({ task, projectTask, projectId }) {
           userId={task.userId}
           taskType={"projectTask"}
           access={"modal"}
+          taskName={task.title}
         />
       ) : (
         <CommentsModal
@@ -196,6 +197,7 @@ export default function TaskModal({ task, projectTask, projectId }) {
           userId={task.userId}
           taskType={"quicktask"}
           access={"modal"}
+          taskName={task.title}
         />
       )}
       <div
